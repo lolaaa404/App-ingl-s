@@ -1,0 +1,88 @@
+@import 'tailwindcss';
+
+/*
+  Paleta de trabajo: papel cálido en claro, tinta apagada en oscuro. La
+  aplicación es una mesa de trabajo donde se leen textos largos durante horas,
+  así que el fondo no es blanco puro y el contraste es alto pero sin brillo.
+*/
+
+@theme {
+  --color-papel: #faf9f6;
+  --color-papel-hundido: #f2f0ec;
+  --color-borde: #e2ded6;
+  --color-tinta: #1f1d1a;
+  --color-tinta-suave: #5d574e;
+
+  --color-noche: #16161a;
+  --color-noche-elevado: #1f1f25;
+  --color-borde-noche: #33333c;
+  --color-tinta-noche: #ececef;
+  --color-tinta-noche-suave: #9d9aa6;
+
+  --color-acento: #1c5f63;
+  --color-acento-claro: #2b8288;
+  --color-acento-noche: #4fb3b8;
+
+  --font-lectura: 'Iowan Old Style', 'Palatino Linotype', 'Georgia', serif;
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-papel);
+  color: var(--color-tinta);
+  font-feature-settings: 'kern', 'liga';
+  text-rendering: optimizeLegibility;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: var(--color-noche);
+    color: var(--color-tinta-noche);
+  }
+}
+
+/* El área de traducción crece con el contenido en lugar de tener barra propia. */
+textarea.crece {
+  field-sizing: content;
+  min-height: 3.5rem;
+}
+
+@supports not (field-sizing: content) {
+  textarea.crece {
+    min-height: 5rem;
+  }
+}
+
+::selection {
+  background-color: color-mix(in oklab, var(--color-acento) 25%, transparent);
+}
+
+/* Barras de desplazamiento discretas en los paneles laterales. */
+.sutil::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.sutil::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklab, currentColor 18%, transparent);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+.sutil::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media print {
+  .sin-imprimir {
+    display: none !important;
+  }
+}

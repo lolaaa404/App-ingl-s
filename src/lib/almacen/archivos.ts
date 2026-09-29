@@ -1,5 +1,6 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 
 /**
  * Persistencia en archivos JSON dentro de la carpeta de datos.
@@ -18,10 +19,20 @@ import path from 'node:path';
  */
 function raizDatos(): string {
   const configurada = process.env.DATOS_DIR?.trim();
-  if (!configurada) return path.join(process.cwd(), 'datos');
-  // La carpeta la elige quien despliega, así que el empaquetador no puede
-  // conocerla de antemano: se le indica que no rastree esta ruta.
-  return path.resolve(/* turbopackIgnore: true */ process.cwd(), configurada);
+  if (configurada) {
+    return path.resolve(/* turbopackIgnore: true */ process.cwd(), configurada);
+  }
+  // En entornos serverless (como Vercel, AWS Lambda o Netlify), el directorio de
+  // ejecución (/var/task) es de solo lectura. Solo el directorio temporal es escribible.
+  if (
+    process.env.VERCEL ||
+    process.env.AWS_LAMBDA_FUNCTION_NAME ||
+    process.env.LAMBDA_TASK_ROOT ||
+    process.cwd().startsWith('/var/task')
+  ) {
+    return path.join(os.tmpdir(), 'datos');
+  }
+  return path.join(process.cwd(), 'datos');
 }
 
 const RAIZ = raizDatos();

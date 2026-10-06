@@ -1,29 +1,23 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import { esSupabaseConfigurado, obtenerClienteSupabase } from './supabase';
 
 /**
- * Persistencia en archivos JSON dentro de la carpeta de datos.
+ * Persistencia en base de datos Supabase (PostgreSQL en la nube) o archivos JSON locales.
  *
- * Se eligió el disco local en lugar de una base de datos porque la aplicación
- * está pensada para el trabajo de una traductora en su propia máquina: los
- * glosarios y la memoria quedan en archivos que puede copiar, versionar o
- * respaldar. La capa está aislada para poder cambiarla por Postgres sin tocar
- * el resto del código.
+ * Si están configuradas las variables SUPABASE_URL y SUPABASE_ANON_KEY (o SERVICE_ROLE_KEY),
+ * se usa la base de datos en la nube. De lo contrario, se usa el disco local en la carpeta `datos`.
  */
 
 /**
- * Raíz de los datos. Se resuelve contra el directorio de trabajo en lugar de
- * con una ruta libre para que el empaquetador no tenga que rastrear todo el
- * proyecto; una ruta absoluta en DATOS_DIR se respeta tal cual.
+ * Raíz de los datos locales.
  */
 function raizDatos(): string {
   const configurada = process.env.DATOS_DIR?.trim();
   if (configurada) {
     return path.resolve(/* turbopackIgnore: true */ process.cwd(), configurada);
   }
-  // En entornos serverless (como Vercel, AWS Lambda o Netlify), el directorio de
-  // ejecución (/var/task) es de solo lectura. Solo el directorio temporal es escribible.
   if (
     process.env.VERCEL ||
     process.env.AWS_LAMBDA_FUNCTION_NAME ||
@@ -38,8 +32,6 @@ function raizDatos(): string {
 const RAIZ = raizDatos();
 
 export function rutaDatos(...partes: string[]): string {
-  // Los nombres de archivo se forman en tiempo de ejecución (un archivo por
-  // proyecto), de modo que el rastreo estático no puede resolverlos.
   return path.join(/*turbopackIgnore: true*/ RAIZ, ...partes);
 }
 
@@ -61,6 +53,21 @@ function enCola<T>(clave: string, tarea: () => Promise<T>): Promise<T> {
 }
 
 export async function leerJSON<T>(relativa: string, porDefecto: T): Promise<T> {
+  if (esSupabaseConfigurado()) {
+    const supabase = obtenerClienteSupabase()!;
+    const { data, error } = await supabase
+      .from('almacen_datos')
+      .select('datos')
+      .eq('clave', relativa)
+      .maybeSingle();
+
+    if (error) {
+      console.error(`[Supabase] Error al leer ${relativa}:`, error.message);
+      return porDefecto;
+    }
+    return (data?.datos as T) ?? porDefecto;
+  }
+
   const ruta = rutaDatos(relativa);
   try {
     const crudo = await fs.readFile(ruta, 'utf8');
@@ -72,8 +79,26 @@ export async function leerJSON<T>(relativa: string, porDefecto: T): Promise<T> {
   }
 }
 
-/** Escritura atómica: archivo temporal y renombrado. */
+/** Escritura atómica / upsert en Supabase o disco local. */
 export async function escribirJSON(relativa: string, datos: unknown): Promise<void> {
+  if (esSupabaseConfigurado()) {
+    const supabase = obtenerClienteSupabase()!;
+    const { error } = await supabase.from('almacen_datos').upsert(
+      {
+        clave: relativa,
+        datos,
+        actualizado: new Date().toISOString(),
+      },
+      { onConflict: 'clave' },
+    );
+
+    if (error) {
+      console.error(`[Supabase] Error al escribir en ${relativa}:`, error.message);
+      throw new Error(`Error en Supabase al guardar ${relativa}: ${error.message}`);
+    }
+    return;
+  }
+
   const ruta = rutaDatos(relativa);
   return enCola(ruta, async () => {
     await asegurarCarpeta(path.dirname(ruta));
@@ -84,6 +109,15 @@ export async function escribirJSON(relativa: string, datos: unknown): Promise<vo
 }
 
 export async function borrarArchivo(relativa: string): Promise<void> {
+  if (esSupabaseConfigurado()) {
+    const supabase = obtenerClienteSupabase()!;
+    const { error } = await supabase.from('almacen_datos').delete().eq('clave', relativa);
+    if (error) {
+      console.error(`[Supabase] Error al borrar ${relativa}:`, error.message);
+    }
+    return;
+  }
+
   try {
     await fs.unlink(rutaDatos(relativa));
   } catch (error) {
@@ -93,6 +127,21 @@ export async function borrarArchivo(relativa: string): Promise<void> {
 }
 
 export async function listarArchivos(relativa: string): Promise<string[]> {
+  if (esSupabaseConfigurado()) {
+    const supabase = obtenerClienteSupabase()!;
+    const prefijo = relativa.endsWith('/') ? relativa : `${relativa}/`;
+    const { data, error } = await supabase
+      .from('almacen_datos')
+      .select('clave')
+      .like('clave', `${prefijo}%`);
+
+    if (error || !data) {
+      if (error) console.error(`[Supabase] Error al listar ${relativa}:`, error.message);
+      return [];
+    }
+    return data.map((d) => d.clave.slice(prefijo.length));
+  }
+
   try {
     return await fs.readdir(rutaDatos(relativa));
   } catch (error) {
@@ -108,6 +157,13 @@ export async function actualizarJSON<T>(
   porDefecto: T,
   transformar: (actual: T) => T | Promise<T>,
 ): Promise<T> {
+  if (esSupabaseConfigurado()) {
+    const actual = await leerJSON<T>(relativa, porDefecto);
+    const nuevo = await transformar(actual);
+    await escribirJSON(relativa, nuevo);
+    return nuevo;
+  }
+
   const ruta = rutaDatos(relativa);
   return enCola(`mutacion:${ruta}`, async () => {
     const actual = await leerJSON<T>(relativa, porDefecto);

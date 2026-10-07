@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Lola, presentación</title>
+<!-- Fuentes locales (npm @fontsource): sin red, el render sale igual siempre. -->
+<link rel="stylesheet" href="node_modules/@fontsource/inter/400.css">
+<link rel="stylesheet" href="node_modules/@fontsource/inter/500.css">
+<link rel="stylesheet" href="node_modules/@fontsource/inter/600.css">
+<link rel="stylesheet" href="node_modules/@fontsource/inter/700.css">
+<link rel="stylesheet" href="node_modules/@fontsource/fraunces/600.css">
+<link rel="stylesheet" href="node_modules/@fontsource/fraunces/700.css">
+<link rel="stylesheet" href="node_modules/@fontsource/fraunces/600-italic.css">
+<link rel="stylesheet" href="node_modules/@fontsource/source-serif-4/400.css">
+<link rel="stylesheet" href="node_modules/@fontsource/source-serif-4/400-italic.css">
+<link rel="stylesheet" href="node_modules/@fontsource/source-serif-4/600.css">
+<link rel="stylesheet" href="node_modules/@fontsource/jetbrains-mono/400.css">
+<style>
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; }
+  body { background: var(--fondo); color: var(--texto); font-family: Inter, sans-serif; }
+  * { box-sizing: border-box; }
+
+  /* ---------- fondo del video ---------- */
+  #bg { position: absolute; inset: 0; background: #101114; overflow: hidden; }
+  #bg i { position: absolute; border-radius: 50%; }
+  #bg .b1 { width: 1500px; height: 1500px; background: radial-gradient(closest-side, rgba(79,179,184,.30), rgba(79,179,184,0)); }
+  #bg .b2 { width: 1300px; height: 1300px; background: radial-gradient(closest-side, rgba(233,184,114,.17), rgba(233,184,114,0)); }
+  #bg .b3 { width: 1100px; height: 1100px; background: radial-gradient(closest-side, rgba(90,110,220,.14), rgba(90,110,220,0)); }
+
+  /* ---------- mundo: ventana de la app + cámara ---------- */
+  #mundo { position: absolute; left: 0; top: 0; width: 1560px; height: 900px; transform-origin: 0 0; }
+  #ventana { position: absolute; left: 0; top: 0; width: 1560px; height: 900px; border-radius: 14px; overflow: hidden; background: #faf9f6;
+             box-shadow: 0 50px 110px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.10); }
+  #tb { position: absolute; left: 0; top: 0; width: 100%; height: 34px; background: #e9e7e2; border-bottom: 1px solid #d8d4cb; display: flex; align-items: center; }
+  #tb .pt { display: flex; gap: 8px; padding-left: 14px; }
+  #tb .pt i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+  #tb .url { position: absolute; left: 50%; transform: translateX(-50%); font-size: 12px; color: #5d574e; font-weight: 500; }
+
+  /* ---------- la app (réplica fiel de src/) ---------- */
+  #app { --ap-papel: #faf9f6; --ap-hund: #f2f0ec; --ap-borde: #e2ded6; --ap-tinta: #1f1d1a; --ap-suave: #5d574e; --ap-acento: #1c5f63; --ap-acento2: #2b8288;
+         position: absolute; left: 0; top: 34px; width: 1560px; height: 866px; background: var(--ap-papel); color: var(--ap-tinta);
+         font-family: Inter, sans-serif; font-size: 14px; line-height: 20px; overflow: hidden; font-feature-settings: 'kern','liga'; }
+  #app .suave { color: var(--ap-suave); }
+  #app .lectura { font-family: 'Source Serif 4', Georgia, serif; }
+  #cab { height: 57px; border-bottom: 1px solid var(--ap-borde); background: rgba(250,249,246,.9); display: flex; align-items: center; padding: 0 24px; gap: 24px; }
+  #cab .logo b { font-size: 18px; line-height: 28px; font-weight: 600; letter-spacing: -.025em; }
+  #cab .logo span { font-size: 12px; color: var(--ap-suave); margin-left: 8px; }
+  #cab nav { display: flex; gap: 4px; }
+  #cab nav a { padding: 6px 10px; border-radius: 6px; color: var(--ap-suave); }
+  .pagina { position: absolute; left: 0; right: 0; top: 57px; bottom: 0; padding: 24px; }
+  .panel { background: #fff; border: 1px solid var(--ap-borde); border-radius: 12px; }
+  .panel > header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--ap-borde); min-height: 49px; }
+  .panel h2 { font-size: 14px; line-height: 20px; font-weight: 600; letter-spacing: -.025em; margin: 0; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 8px; padding: 6px 12px; font-size: 14px; line-height: 20px; font-weight: 500;
+         border: 1px solid var(--ap-borde); background: transparent; white-space: nowrap; transform-origin: center; }
+  .btn.prin { background: var(--ap-acento); color: #fff; border-color: transparent; }
+  .btn.sutil { border-color: transparent; }
+  .btn.off { opacity: .6; }
+  .sel { display: inline-block; border: 1px solid var(--ap-borde); border-radius: 8px; padding: 8px 32px 8px 12px; background: #fff; font-size: 14px; line-height: 20px; position: relative; white-space: nowrap; }
+  .sel::after { content: ''; position: absolute; right: 12px; top: 50%; width: 6px; height: 6px; border-right: 1.5px solid #6b7280; border-bottom: 1.5px solid #6b7280; transform: translateY(-70%) rotate(45deg); }
+  .campo { display: block; }
+  .campo .et { display: block; font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: .025em; text-transform: uppercase; margin-bottom: 6px; }
+  .campo .ay { display: block; font-size: 12px; line-height: 16px; margin-top: 4px; color: var(--ap-suave); }
+  .entrada { border: 1px solid var(--ap-borde); border-radius: 8px; padding: 8px 12px; background: #fff; font-size: 14px; line-height: 20px; min-height: 38px; }
+  .chip { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 2px 8px; font-size: 11px; line-height: 16px; font-weight: 500; box-shadow: inset 0 0 0 1px var(--r, #cbd5e1); white-space: nowrap; }
+  .c-amber { background: #fef3c7; color: #78350f; --r: #fcd34d; }
+  .c-rose { background: #ffe4e6; color: #881337; --r: #fda4af; }
+  .c-fuchsia { background: #fae8ff; color: #701a75; --r: #f0abfc; }
+  .c-violet { background: #ede9fe; color: #5b21b6; --r: #c4b5fd; }
+  .c-sky { background: #e0f2fe; color: #0c4a6e; --r: #7dd3fc; }
+  .c-red { background: #fee2e2; color: #7f1d1d; --r: #f87171; }
+  .c-redsev { background: #fee2e2; color: #991b1b; --r: #fca5a5; }
+  .c-amsev { background: #fef3c7; color: #92400e; --r: #fcd34d; }
+  .c-slate { background: #f1f5f9; color: #334155; --r: #cbd5e1; }
+  .c-emerald { background: #d1fae5; color: #065f46; --r: #6ee7b7; }
+  .c-yellow { background: #fef9c3; color: #713f12; --r: #fde047; }
+  .c-nada { background: transparent; --r: var(--ap-borde); }
+  .barra { display: flex; align-items: center; gap: 8px; }
+  .barra .pista { height: 6px; flex: 1; border-radius: 999px; background: var(--ap-hund); overflow: hidden; }
+  .barra .rell { height: 100%; border-radius: 999px; background: var(--ap-acento); width: 0; }
+  .barra .pct { font-size: 12px; line-height: 16px; color: var(--ap-suave); font-variant-numeric: tabular-nums; min-width: 34px; text-align: right; }
+  .aviso { border-radius: 8px; padding: 8px 12px; font-size: 14px; line-height: 20px; border: 1px solid; }
+  .aviso.ok { border-color: #6ee7b7; background: #ecfdf5; color: #064e3b; }
+  .cb { display: inline-block; width: 14px; height: 14px; border: 1px solid #8a8780; border-radius: 3px; background: #fff; position: relative; flex: none; margin-top: 3px; }
+  .cb.on { background: var(--ap-acento); border-color: var(--ap-acento); }
+  .cb.on::after { content: ''; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border-right: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(45deg); }
+  .casilla { display: flex; align-items: flex-start; gap: 8px; border-radius: 8px; padding: 6px 8px; }
+
+  /* inicio */
+  #p-ini { }
+  .grid-ini { display: grid; grid-template-columns: 1fr 420px; gap: 24px; }
+  .enc { padding: 12px 16px; border-bottom: 1px solid var(--ap-borde); }
+  .enc:last-child { border-bottom: 0; }
+  .enc h3 { margin: 0; font-weight: 500; letter-spacing: -.025em; font-size: 16px; line-height: 24px; }
+  .enc .meta { font-size: 12px; line-height: 16px; margin-top: 2px; }
+  .enc .barra { max-width: 384px; margin-top: 8px; }
+  .tabs2 { display: flex; gap: 4px; padding: 4px; border-radius: 8px; background: var(--ap-hund); }
+  .tabs2 span { flex: 1; text-align: center; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 14px; }
+  .tabs2 span.on { background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .tabs2 span:not(.on) { color: var(--ap-suave); }
+  #dz { border: 1px dashed var(--ap-borde); border-radius: 8px; padding: 32px 16px; text-align: center; display: flex; flex-direction: column; gap: 4px; height: 118px; justify-content: center; position: relative; }
+  #dz .t { font-size: 14px; font-weight: 500; }
+  #dz .s { font-size: 12px; color: var(--ap-suave); }
+  #dz.con { border-color: var(--ap-acento); }
+
+  /* proyecto */
+  .barra-enc > .cuerpo { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 16px; }
+  .barra-enc h1 { margin: 0; font-size: 18px; line-height: 28px; font-weight: 600; letter-spacing: -.025em; white-space: nowrap; }
+  .barra-enc .sub { font-size: 12px; line-height: 16px; margin-top: 2px; white-space: nowrap; }
+  .barra-enc .acc { display: flex; align-items: center; gap: 8px; }
+  #aviso-slot { height: 40px; margin: 12px 0 0; position: relative; }
+  #aviso-slot .aviso { position: absolute; left: 0; right: 0; top: 0; }
+  .grid-pro { display: grid; grid-template-columns: 1fr 420px; gap: 16px; margin-top: 12px; }
+  .filtros { display: flex; gap: 6px; padding: 10px 16px; border-bottom: 1px solid var(--ap-borde); }
+  .filtro { border-radius: 999px; padding: 4px 10px; font-size: 12px; line-height: 16px; font-weight: 500; box-shadow: inset 0 0 0 1px var(--ap-borde); color: var(--ap-suave); }
+  .filtro.on { background: var(--ap-acento); color: #fff; box-shadow: inset 0 0 0 1px var(--ap-acento); }
+  #lista { overflow: hidden; position: relative; }
+  #lista-in { will-change: transform; }
+  .fila { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; row-gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--ap-borde); }
+  .fila.sel1 { background: rgba(28,95,99,.06); }
+  .fila-cab { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; }
+  .fila-cab .num { font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 16px; color: var(--ap-suave); }
+  .fila-cab .conf { margin-left: auto; border-radius: 6px; padding: 2px 8px; font-size: 11px; line-height: 16px; font-weight: 500; color: var(--ap-suave); }
+  .ser { font-size: 15px; line-height: 24px; }
+  .ser.titulo { font-weight: 600; }
+  .ser.des { border: 1px solid transparent; border-radius: 6px; padding: 6px 8px; min-height: 40px; position: relative; }
+  .ser .sin { font-style: italic; color: var(--ap-suave); position: absolute; left: 8px; top: 6px; }
+  .etq-fila { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; min-height: 0; }
+  .pw { display: inline; }
+  .mk { border-radius: 3px; padding: 0 2px; -webkit-box-decoration-break: clone; box-decoration-break: clone; background: rgba(var(--rgb), calc(var(--mk, 0) * var(--al))); box-shadow: 0 0 0 calc(var(--ping, 0) * 7px) rgba(var(--rgb), calc(var(--ping, 0) * .55)); color: color-mix(in srgb, var(--tc) calc(var(--mk, 0) * 100%), var(--ap-tinta)); }
+  .mk.on { font-weight: 600; }
+  .mk-amber { --rgb: 253,230,138; --al: .85; --tc: #451a03; }
+  .mk-rose { --rgb: 254,205,211; --al: .9; --tc: #4c0519; }
+  .mk-fuchsia { --rgb: 245,208,254; --al: .9; --tc: #4a044e; }
+  .mk-sky { --rgb: 186,230,253; --al: .9; --tc: #082f49; }
+  .mk-red { --rgb: 252,165,165; --al: .85; --tc: #450a0a; }
+  .col-der { display: flex; flex-direction: column; gap: 16px; }
+  .tabs { display: flex; gap: 4px; padding: 4px; border-radius: 8px; background: var(--ap-hund); }
+  .tabs span { flex: 1; text-align: center; padding: 6px 8px; border-radius: 6px; font-size: 12px; line-height: 16px; font-weight: 500; color: var(--ap-suave); }
+  .tabs span.on { background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.1); color: var(--ap-tinta); }
+  .pila { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .pila > .panel { grid-area: 1 / 1; align-self: start; width: 100%; }
+  .cuerpo-lat { overflow: hidden; }
+  .sc { padding: 16px; will-change: transform; }
+  h3.sec { margin: 0 0 8px; font-size: 12px; line-height: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: .025em; }
+  .tarj { border: 1px solid var(--ap-borde); border-radius: 8px; padding: 10px; }
+  .tarj + .tarj { margin-top: 10px; }
+  .tarj .fr { background: var(--ap-hund); border-radius: 4px; padding: 0 4px; font-weight: 500; }
+  .tarj p { margin: 0; }
+  .peq { font-size: 13px; line-height: 18px; }
+  .nano { font-size: 11px; line-height: 16px; }
+  .rev { will-change: opacity, transform; }
+  dl.ficha { display: grid; grid-template-columns: 1fr 1fr; column-gap: 24px; row-gap: 6px; margin: 0; }
+  dl.ficha div { display: flex; gap: 8px; }
+  dl.ficha dt { font-size: 12px; line-height: 20px; text-transform: uppercase; letter-spacing: .025em; color: var(--ap-suave); flex: none; }
+  dl.ficha dd { margin: 0; min-width: 0; }
+  ul.l { margin: 0; padding: 0 0 0 18px; }
+  .hall { padding: 10px 16px; border-bottom: 1px solid var(--ap-borde); position: relative; }
+  .hall.on { background: rgba(28,95,99,.09); box-shadow: inset 3px 0 0 var(--ap-acento); }
+  #menu-exp { position: absolute; background: #fff; border: 1px solid var(--ap-borde); border-radius: 8px; box-shadow: 0 12px 30px rgba(0,0,0,.18); padding: 4px; min-width: 230px; z-index: 5; }
+  #menu-exp div { padding: 6px 10px; border-radius: 5px; font-size: 14px; line-height: 20px; }
+  #menu-exp div.h { background: rgba(28,95,99,.12); color: var(--ap-acento); font-weight: 500; }
+
+  /* ---------- cursor, archivo, clic ---------- */
+  #cursor { position: absolute; left: 0; top: 0; width: 28px; height: 28px; z-index: 50; pointer-events: none; filter: drop-shadow(0 3px 5px rgba(0,0,0,.35)); }
+  #ripple { position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%; border: 3px solid #4fb3b8; z-index: 49; }
+  #archivo { position: absolute; z-index: 48; width: 250px; height: 62px; margin: -12px 0 0 -14px; background: #fff; border: 1px solid #d9d4c9; border-radius: 10px;
+             box-shadow: 0 14px 30px rgba(0,0,0,.28); display: flex; align-items: center; gap: 10px; padding: 0 14px; font-size: 14px; line-height: 18px; font-weight: 500; color: #1f1d1a; }
+  #archivo .ic, .ic-pdf { width: 30px; height: 36px; border-radius: 4px; background: #e5484d; color: #fff; font-size: 10px; font-weight: 700; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; flex: none; }
+
+  /* ---------- capas de video (pantalla) ---------- */
+  .pill { position: absolute; background: rgba(16,17,20,.88); color: var(--texto); border-radius: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.07); }
+  #kicker { left: 56px; top: 36px; padding: 12px 24px 12px 14px; font-size: 28px; line-height: 34px; font-weight: 600; display: flex; align-items: center; gap: 14px; visibility: hidden; letter-spacing: -.01em; }
+  #kicker b { background: var(--acento); color: #0b1f20; border-radius: 10px; padding: 0 12px; font-size: 24px; line-height: 38px; font-weight: 700; }
+  #sub { left: 50%; bottom: 40px; transform: translateX(-50%); padding: 14px 34px 16px; font-size: 46px; line-height: 56px; font-weight: 600; text-align: center; white-space: nowrap; letter-spacing: -.01em; visibility: hidden; }
+  #sub b { color: var(--acento); font-weight: 700; }
+  .callout { position: absolute; background: #fff; color: #1f1d1a; border-radius: 14px; box-shadow: 0 24px 60px rgba(0,0,0,.45); visibility: hidden; }
+  #pills { position: absolute; left: 96px; top: 126px; display: flex; gap: 14px; visibility: hidden; }
+  #pills span { display: block; padding: 14px 26px; border-radius: 999px; font-size: 30px; line-height: 36px; font-weight: 600; color: #cfd3d6; background: rgba(255,255,255,.08); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.14); }
+  #pills span.on { background: var(--acento); color: #0b1f20; box-shadow: none; }
+  #scan { left: 96px; top: 250px; width: 640px; height: 560px; padding: 26px 30px; }
+  #scan .cab { display: flex; align-items: center; justify-content: space-between; font-size: 20px; font-weight: 600; margin-bottom: 18px; color: #5d574e; }
+  #scan .ln { height: 12px; border-radius: 6px; background: #e7e3da; margin: 14px 0; }
+  #scan .cor { font-family: 'Source Serif 4', serif; font-size: 22px; line-height: 32px; color: #1f1d1a; margin: 6px 0; }
+  #scan .br { display: inline-block; font-family: Inter, sans-serif; font-size: 20px; line-height: 28px; font-weight: 600; border-radius: 8px; padding: 6px 14px; margin: 8px 0; background: #f1f5f9; color: #475569; }
+  #scan .br.on { background: #fae8ff; color: #701a75; box-shadow: 0 0 0 3px #f0abfc; }
+  #doc { left: 70px; top: 470px; width: 500px; height: 470px; padding: 30px 34px; }
+  #doc .wb { position: absolute; right: 22px; top: 20px; width: 56px; height: 56px; border-radius: 12px; background: #2b6bd6; color: #fff; font-size: 32px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  #doc .tt { font-family: 'Source Serif 4', serif; font-weight: 600; font-size: 26px; letter-spacing: .02em; margin: 6px 80px 16px 0; line-height: 32px; }
+  #doc .ln { height: 11px; border-radius: 6px; background: #e3dfd6; margin: 12px 0; }
+  #doc .tb2 { display: grid; grid-template-columns: 1fr 1fr 1fr; border: 2px solid #d8d3c8; border-radius: 6px; margin: 18px 0; }
+  #doc .tb2 i { height: 38px; border-right: 2px solid #d8d3c8; border-bottom: 2px solid #d8d3c8; display: block; }
+  #doc .tb2 i:nth-child(3n) { border-right: 0; } #doc .tb2 i:nth-last-child(-n+3) { border-bottom: 0; }
+  #doc .pie { position: absolute; left: 34px; right: 34px; bottom: 24px; font-size: 22px; line-height: 28px; font-weight: 600; color: #1c5f63; }
+
+  #hook { position: absolute; left: 0; right: 0; top: 78px; text-align: center; padding: 0 140px; font-family: Fraunces, serif; font-weight: 700; font-size: 100px; line-height: 106px; letter-spacing: -.02em; text-shadow: 0 6px 30px rgba(0,0,0,.45); }
+  #hook .l2 { display: block; font-style: italic; font-weight: 600; margin-top: 10px; color: var(--acento); }
+  #hook .tach { text-decoration: line-through; text-decoration-thickness: 5px; text-decoration-color: rgba(255,255,255,.0); }
+
+  #cierre { position: absolute; inset: 0; visibility: hidden; background: rgba(12,13,16,.0); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  #cierre .marca { font-family: Fraunces, serif; font-weight: 700; font-size: 230px; line-height: 220px; letter-spacing: -.03em; }
+  #cierre .marca em { color: var(--acento); font-style: normal; }
+  #cierre .baj { font-size: 34px; line-height: 44px; font-weight: 500; color: #b8bec2; letter-spacing: .04em; margin-top: 8px; }
+  #cierre .f1, #cierre .f2 { font-family: Fraunces, serif; font-weight: 600; font-size: 92px; line-height: 104px; letter-spacing: -.02em; }
+  #cierre .f1 { margin-top: 56px; }
+  #cierre .f2 b { color: var(--acento); font-style: italic; font-weight: 600; }
+  #cierre .nota { position: absolute; right: 56px; bottom: 44px; font-size: 22px; color: #8c9296; }
+  #dim { position: absolute; inset: 0; visibility: hidden; background: linear-gradient(90deg, rgba(14,15,18,.93) 0, rgba(14,15,18,.86) 44%, rgba(14,15,18,.0) 62%); }
+  #fin { position: absolute; inset: 0; background: #101114; opacity: 0; }
+</style>
+</head>
+<body>
+<div id="bg"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
+
+<div id="mundo">
+  <div id="ventana">
+    <div id="tb"><div class="pt"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div><div class="url">Lola · asistente de traducción</div></div>
+    <div id="app"></div>
+  </div>
+  <div id="archivo"><span class="ic">PDF</span><span>contrato-distribucion-acme.pdf</span></div>
+  <div id="menu-exp"></div>
+  <div id="ripple"></div>
+  <svg id="cursor" viewBox="0 0 28 28"><path d="M4 2 L4 22 L9.2 17.2 L12.6 25 L16 23.6 L12.7 15.9 L19.8 15.6 Z" fill="#111" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg>
+</div>
+
+<div id="dim"></div>
+<section id="hook"><span class="l1"></span><span class="l2"></span></section>
+<div id="pills"></div>
+<div id="scan" class="callout"></div>
+<div id="doc" class="callout"></div>
+<div id="kicker" class="pill"></div>
+<section id="cierre"><div class="marca"></div><div class="baj"></div><div class="f1"></div><div class="f2"></div><div class="nota"></div></section>
+<div id="sub" class="pill"></div>
+<div id="fin"></div>
+
+<script src="out/datos.js"></script>
+<script src="motor/motor.js"></script>
+<script>
+const { k, win, ease, $, $$, css, vis, lerp, clamp, subtitulo } = M;
+const V = window.VAR, T = V.textos, D = window.DUR;
+for (const [n, c] of Object.entries(V.colores)) document.body.style.setProperty("--" + n, c);
+
+/* =============== tiempos: todo cuelga de las palabras de la voz =============== */
+const ESC = V.tiempos.escenas, PAL = V.palabras;
+const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]/g, "");
+function W(esc, pal, n = 0) {
+  const [a, b] = ESC[esc], q = norm(pal);
+  const hits = PAL.filter(p => p.s >= a - 0.01 && p.s < b && norm(p.w) === q);
+  return hits[n] ? hits[n].s : a + 1;
+}
+const S = i => ESC[i][0], F = i => ESC[i][1];
+const E = {
+  mesa: W(0, "mesa"), botonFin: W(0, "botón"),
+  pdf: W(1, "PDF"), word: W(1, "Word"), escaneo: W(1, "escaneo"), lee: W(1, "lee"), sellos: W(1, "sellos"), firmas: W(1, "firmas"),
+  documento: W(2, "documento"), ambito: W(2, "ámbito"), registro: W(2, "registro"), terminos: W(2, "términos"),
+  traduce: W(3, "Traduce"), memoria: W(3, "memoria"), glosarios: W(3, "glosarios"), terminologia: W(3, "terminología"),
+  dif: W(4, "dificultad"), calcos: W(4, "calcos"), falsos: W(4, "falsos"), figuras: W(4, "figuras"),
+  tocas: W(5, "Tocás"), eleccion: W(5, "elección"), justif: W(5, "justificada"), fuentes: W(5, "fuentes"), alt: W(5, "alternativas"),
+  control: W(6, "control"), cifras: W(6, "cifras"), fechas: W(6, "fechas"), glosario: W(6, "glosario"), segunda: W(6, "segunda"), omisiones: W(6, "omisiones"),
+  reutiliza: W(7, "reutiliza"), exportas: W(7, "exportás"), wordx: W(7, "Word"),
+  lola: W(8, "Lola"), motor: W(8, "motor"), vos: W(8, "Vos"),
+};
+// momentos de la animación que no coinciden con una palabra
+const TM = {
+  arrastre: E.pdf - 0.45, soltar: E.pdf + 0.75,
+  nombre: S(1) + 4.0, clicNombre: S(1) + 3.9, clicCrear: S(1) + 6.2, procesa: S(1) + 6.3,
+  pagina: S(1) + 6.65,                                  // cambia de Inicio a Proyecto
+  clicAnalizar: S(2) + 0.85, analizado: S(2) + 1.4,
+  clicTraducir: S(3) + 0.5, clicRecursos: S(3) + 1.0, trad0: S(3) + 1.5,
+  clicEtq: S(5) + 0.45, clicConf: S(5) + 4.7,
+  clicQA: S(6) + 0.25, informe: S(6) + 1.0, clicHallazgo: S(6) + 5.4,
+  clicGuardar: S(7) + 0.95, clicExp: E.exportas - 0.1, clicDocx: E.exportas + 1.5,
+};
+
+/* =============== datos de la app (encargo de ejemplo) =============== */
+const ETQ = {
+  "revisar-termino": { n: "Revisar término", c: "amber", mk: "amber" },
+  "posible-calco": { n: "Posible calco", c: "rose", mk: "rose" },
+  "sin-equivalente-exacto": { n: "Sin equivalente exacto", c: "fuchsia", mk: "fuchsia" },
+  "varias-opciones": { n: "Varias opciones", c: "sky", mk: "sky" },
+  omision: { n: "Omisión", c: "red", mk: "red" },
+};
+const FILAS = [
+  { n: 1, tipo: "titulo", o: "DISTRIBUTION AGREEMENT", d: "CONTRATO DE DISTRIBUCIÓN", mem: true, marks: [] },
+  { n: 2, o: "This Agreement is made on 15 March 2025 between Acme Corp., a company incorporated under the laws of Delaware (the “Supplier”), and Beta Servicios S. A. (the “Distributor”).",
+    d: "El presente Contrato se celebra el 15 de marzo de 2025 entre Acme Corp., sociedad constituida conforme a las leyes de Delaware (el «Proveedor»), y Beta Servicios S. A. (el «Distribuidor»).", mem: true, marks: [] },
+  { n: 3, o: "In consideration of the mutual covenants herein, the parties agree as follows.",
+    d: "En contraprestación por los pactos recíprocos aquí previstos, las partes acuerdan lo siguiente.",
+    marks: [
+      { a: "o", f: "covenants", e: "varias-opciones", t: E.dif + 0.1 }, { a: "d", f: "pactos", e: "varias-opciones", t: E.dif + 0.1 },
+      { a: "o", f: "consideration", e: "sin-equivalente-exacto", t: E.figuras + 0.1 }, { a: "d", f: "contraprestación", e: "sin-equivalente-exacto", t: E.figuras + 0.1 },
+    ], just: ["consideration", "covenants"] },
+  { n: 4, o: "The Supplier shall deliver the Products within thirty (30) days after receipt of a purchase order, in accordance with the applicable statute.",
+    d: "El Proveedor deberá entregar los Productos dentro de los treinta (30) días siguientes a la recepción de una orden de compra, de acuerdo con el estatuto aplicable.",
+    marks: [{ a: "d", f: "estatuto", e: "posible-calco", t: E.calcos + 0.05 }, { a: "o", f: "statute", e: "posible-calco", t: E.falsos + 0.05 }] },
+  { n: 5, o: "Payment shall be made in the amount of USD 1,250,000.50, and the Distributor shall not be liable for any delay caused by the Supplier.",
+    d: "El pago se efectuará por la suma de USD 1.250.000,50, y el Distribuidor no será responsable de ningún retraso.",
+    marks: [{ a: "d", f: "responsable", e: "revisar-termino", t: E.dif + 0.35 }, { a: "o", f: "liable", e: "revisar-termino", t: E.dif + 0.35 },
+            { a: "d", f: "ningún retraso", e: "omision", t: S(6) + 5.9 }] },
+  { n: 6, o: "Each party represents that it has full power and authority to enter into this Agreement.",
+    d: "Cada parte declara que cuenta con plena capacidad y facultades para celebrar este Contrato.", marks: [] },
+  { n: 7, o: "This Agreement may be executed in counterparts.", d: "Este Contrato podrá firmarse en varios ejemplares.", marks: [] },
+];
+const NFILAS = 12;
+
+/* =============== construcción del DOM =============== */
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+const REV = (h, t, tag = "div", cls = "", st = "") => `<${tag} class="rev ${cls}" data-t="${t.toFixed(3)}" style="${st}">${h}</${tag}>`;
+
+// texto con marcas: cada palabra va en su span (para que aparezca palabra por palabra) y las marcas envuelven sus palabras
+function marcado(texto, marks) {
+  const pos = [];
+  marks.forEach((m, i) => { const ix = texto.indexOf(m.f); if (ix > -1) pos.push({ a: ix, b: ix + m.f.length, i }); });
+  pos.sort((x, y) => x.a - y.a);
+  const palabras = (s) => s.split(/(\s+)/).map(w => (/^\s+$/.test(w) || !w) ? w : `<span class="pw">${esc(w)}</span>`).join("");
+  let h = "", c = 0;
+  for (const p of pos) {
+    h += palabras(texto.slice(c, p.a));
+    h += `<mark class="mk mk-${ETQ[marks[p.i].e].mk}" data-m="${p.i}" style="--fw:${marks[p.i].e === "posible-calco" || true ? 600 : 400}">${palabras(texto.slice(p.a, p.b))}</mark>`;
+    c = p.b;
+  }
+  return h + palabras(texto.slice(c));
+}
+function filaHTML(f) {
+  const ori = marcado(f.o, f.marks.filter(m => m.a === "o"));
+  const des = marcado(f.d, f.marks.filter(m => m.a === "d"));
+  const etqs = [...new Set(f.marks.map(m => m.e))].map(e => {
+    const t = Math.min(...f.marks.filter(m => m.e === e).map(m => m.t));
+    return `<span class="chip c-${ETQ[e].c} rev" data-t="${t.toFixed(3)}" style="opacity:0">${ETQ[e].n}</span>`;
+  }).join("");
+  const just = (f.just || []).map(j => `<span class="chip c-nada rev" data-t="${(E.figuras + 0.5).toFixed(3)}" style="opacity:0">↳ ${j}</span>`).join("");
+  return `<div class="fila" id="f${f.n}">
+    <div class="fila-cab"><span class="num">${String(f.n).padStart(3, "0")}</span>${f.tipo === "titulo" ? '<span class="chip c-nada">titulo</span>' : ""}
+      <span class="chip est c-slate">Pendiente</span><span class="chip c-violet mem" style="display:none">memoria 100 %</span><span class="conf">Confirmar</span></div>
+    <div class="ser lectura ori ${f.tipo === "titulo" ? "titulo" : ""}">${ori}</div>
+    <div class="ser lectura des ${f.tipo === "titulo" ? "titulo" : ""}"><span class="sin">Sin traducir</span><span class="txt">${des}</span></div>
+    <div class="etq-fila">${etqs}${just}</div></div>`;
+}
+
+const HALL = [
+  { sev: "alta", cat: "Omisiones", seg: 5, src: "lectura del modelo", msg: "Falta «caused by the Supplier»: cambia quién responde del retraso.", fr: "ningún retraso", sug: "ningún retraso causado por el Proveedor", k: "omi" },
+  { sev: "alta", cat: "Sentido", seg: 10, src: "lectura del modelo", msg: "«May terminate» (facultad) aparece como «deberá resolver» (obligación).", fr: "deberá resolver", sug: "podrá resolver", k: "sen" },
+  { sev: "media", cat: "Números", seg: 7, src: "regla", msg: "El importe «USD 2,500.00» aparece como «USD 2.500»: se perdieron los decimales.", fr: "USD 2.500", k: "num" },
+  { sev: "media", cat: "Fechas", seg: 9, src: "regla", msg: "«03/04/2025» es ambigua: el inglés escribe mes/día y el español, día/mes.", fr: "03/04/2025", k: "fec" },
+  { sev: "media", cat: "Terminología", seg: 8, src: "regla", msg: "«Governing Law» no sigue el glosario del encargo.", fr: "Legislación", sug: "Ley aplicable", k: "glo" },
+  { sev: "baja", cat: "Estilo", seg: 11, src: "regla", msg: "Gerundio de posterioridad: «…, siendo responsable de…».", k: "est" },
+  { sev: "baja", cat: "Formato", seg: 12, src: "regla", msg: "Doble espacio antes de «El Proveedor».", k: "for" },
+];
+
+$("#app").innerHTML = `
+<div id="cab"><div class="logo"><b>Lola</b><span>asistente de traducción</span></div>
+  <nav><a>Proyectos</a><a>Memoria</a><a>Glosarios</a><a>Diccionarios</a><a>Estilos</a></nav></div>
+
+<!-- ========== INICIO ========== -->
+<div class="pagina" id="p-ini"><div class="grid-ini">
+  <section class="panel"><header><h2>Encargos</h2><span class="suave" style="font-size:12px;line-height:16px">2.318 unidades en memoria · 3 glosarios · modelo: gemini-3.1-flash-lite-preview</span></header>
+    <div class="enc"><div style="display:flex;justify-content:space-between;align-items:baseline"><h3>Informe clínico — Hospital Italiano</h3><span class="suave nano">02 oct 2025</span></div>
+      <p class="meta suave">Inglés → Español · Médica · 64 segmentos · 46 confirmados</p><div class="barra"><div class="pista"><div class="rell" style="width:72%"></div></div><span class="pct">72 %</span></div></div>
+    <div class="enc"><div style="display:flex;justify-content:space-between;align-items:baseline"><h3>Poder general — Registro Civil</h3><span class="suave nano">28 sep 2025</span></div>
+      <p class="meta suave">Español → Inglés · Traducción pública · 38 segmentos · 38 confirmados</p><div class="barra"><div class="pista"><div class="rell" style="width:100%"></div></div><span class="pct">100 %</span></div></div>
+    <div class="enc"><div style="display:flex;justify-content:space-between;align-items:baseline"><h3>Manual de usuario — Zeta Labs</h3><span class="suave nano">19 sep 2025</span></div>
+      <p class="meta suave">Inglés → Español · Técnico-científica · 112 segmentos · 112 confirmados</p><div class="barra"><div class="pista"><div class="rell" style="width:100%"></div></div><span class="pct">100 %</span></div></div>
+    <div class="enc"><div style="display:flex;justify-content:space-between;align-items:baseline"><h3>Contrato de arrendamiento — Pérez</h3><span class="suave nano">11 sep 2025</span></div>
+      <p class="meta suave">Español → Inglés · Jurídica · 54 segmentos · 54 confirmados</p><div class="barra"><div class="pista"><div class="rell" style="width:100%"></div></div><span class="pct">100 %</span></div></div>
+  </section>
+  <section class="panel" id="nuevo"><header><h2>Nuevo encargo</h2></header>
+    <div style="padding:16px;display:flex;flex-direction:column;gap:18px">
+      <div class="tabs2"><span class="on">Subir documento</span><span>Pegar texto</span></div>
+      <label class="campo"><span class="et">Documento</span>
+        <div id="dz"><span class="t" id="dz-t">Arrastrar el archivo o pulsar aquí</span><span class="s" id="dz-s">PDF, Word, PowerPoint o imagen</span></div>
+        <span class="ay">Formatos: .pdf · .docx · .pptx · .txt · .md · .rtf · .png · .jpg · .jpeg · .webp · .gif. Las imágenes y los escaneos pasan por OCR.</span></label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <label class="campo"><span class="et">Dirección</span><span class="sel" style="display:block">Inglés → Español</span></label>
+        <label class="campo"><span class="et">Estilo</span><span class="sel" id="sel-estilo" style="display:block">General</span><span class="ay">El análisis del texto puede recomendar otro.</span></label>
+      </div>
+      <label class="campo"><span class="et">Nombre del encargo</span><div class="entrada" id="in-nombre"><span id="in-t"></span><span class="suave" id="in-ph">Contrato de distribución — Acme</span></div><span class="ay">Opcional: si se deja vacío, se usa el del archivo.</span></label>
+      <label class="campo"><span class="et">Glosarios</span><span class="ay" style="margin:-2px 0 4px">Sus equivalencias mandan sobre el criterio del motor.</span>
+        <div class="casilla"><i class="cb on"></i><span>Base · figuras sin equivalente exacto<span class="suave" style="font-size:12px;margin-left:6px">43 entradas · Jurídico comparado</span></span></div>
+        <div class="casilla"><i class="cb" id="cb-acme"></i><span>Contratos Acme<span class="suave" style="font-size:12px;margin-left:6px">18 entradas · Comercial</span></span></div>
+      </label>
+      <div class="btn prin" id="btn-crear" style="width:100%"><span id="btn-crear-t">Crear encargo</span></div>
+    </div></section>
+</div></div>
+
+<!-- ========== PROYECTO ========== -->
+<div class="pagina" id="p-pro">
+  <section class="panel barra-enc" id="barra-enc"><div class="cuerpo">
+    <div style="flex:1;min-width:0"><h1>Contrato de distribución — Acme</h1>
+      <p class="sub suave" id="sub-enc"></p></div>
+    <span class="sel" style="min-width:176px">Jurídica</span>
+    <div class="acc">
+      <span class="btn" id="b-analizar"><span>Analizar fuente</span></span>
+      <span class="btn prin" id="b-traducir"><span>Traducir 12 pendientes</span></span>
+      <span class="btn" id="b-qa"><span>Control de calidad</span></span>
+      <span class="btn off" id="b-memoria"><span>Guardar en memoria</span></span>
+      <span class="sel" id="s-exp">Exportar…</span>
+    </div>
+    <div style="width:100%"><div class="barra"><div class="pista"><div class="rell" id="prog"></div></div><span class="pct" id="prog-p">0 %</span></div></div></div></section>
+  <div id="aviso-slot"><div class="aviso ok" id="aviso" style="opacity:0"></div></div>
+  <div class="grid-pro">
+    <section class="panel" id="banco"><header><div style="display:flex;gap:8px;align-items:center"><h2>Banco bilingüe</h2><span class="suave" style="font-size:12px">12 de 12</span></div>
+      <div style="display:flex;gap:8px;align-items:center"><div class="entrada" style="width:176px;min-height:32px;padding:5px 12px;font-size:12px"><span class="suave">Buscar en el texto…</span></div><span class="sel" style="font-size:12px;padding:6px 32px 6px 12px">Todas las etiquetas</span></div></header>
+      <div class="filtros"><span class="filtro on">Todos (12)</span><span class="filtro" id="f-pend">Pendientes (12)</span><span class="filtro" id="f-marc">Marcados (0)</span><span class="filtro" id="f-conf">Confirmados (0)</span></div>
+      <div id="lista"><div id="lista-in">${FILAS.map(filaHTML).join("")}</div></div></section>
+    <div class="col-der">
+      <div class="tabs" id="tabs"><span data-p="fuente">Fuente</span><span data-p="detalle">Detalle</span><span data-p="calidad">Calidad</span><span data-p="recursos">Recursos</span></div>
+      <div class="pila" id="pila">
+        ${panelFuente()}
+        ${panelDetalle()}
+        ${panelCalidad()}
+        ${panelRecursos()}
+      </div>
+    </div>
+  </div>
+</div>`;
+
+/* --- paneles laterales --- */
+function panelFuente() {
+  const R = (h, t, c = "") => REV(h, t, "div", c);
+  const f = [["Tipo", "Contrato de distribución"], ["Ámbito", "Derecho comercial"], ["Sistema", "Common law"], ["Jurisdicción", "Nueva York, EE. UU."], ["Registro", "Formal, técnico-jurídico"], ["Destinatario", "Parte contratante hispanohablante"], ["Finalidad", "Firma y ejecución del contrato"]];
+  const tf = [E.documento + 0.5, E.ambito - 0.05, E.ambito + 0.45, E.ambito + 0.7, E.registro - 0.05, E.registro + 0.35, E.registro + 0.6];
+  return `<section class="panel" id="pn-fuente"><header><h2>Lectura del texto fuente</h2>${REV('<span class="btn sutil" style="padding:4px 10px">Volver a analizar</span>', TM.analizado, "span")}</header>
+  <div class="cuerpo-lat" id="cl-fuente" style="height:506px"><div class="sc" id="sc-fuente">
+    <div id="fu-vacio" style="text-align:center;padding:96px 16px"><p style="margin:0;font-weight:500">Todavía sin analizar</p><p class="suave" style="margin:4px auto 16px;max-width:340px">Antes de traducir conviene interpretar el documento: qué es, de qué ámbito viene, a qué sistema jurídico pertenece y qué términos van a dar problemas.</p><span class="btn prin" id="b-fu-analizar">Analizar el texto fuente</span></div>
+    <div id="fu-lleno" style="visibility:hidden">
+    ${R(`<p class="lectura" style="margin:0 0 16px;font-size:15px;line-height:24px">Contrato de distribución exclusiva entre un proveedor estadounidense y un distribuidor argentino, redactado según el common law del estado de Nueva York. Registro formal, con cláusulas de responsabilidad, plazo de entrega y ley aplicable.</p>`, TM.analizado)}
+    <dl class="ficha" style="margin-bottom:18px">${f.map(([a, b], i) => REV(`<dt>${a}</dt><dd>${b}</dd>`, tf[i], "div")).join("")}</dl>
+    ${R(`<h3 class="sec">Términos que exigen decisión</h3>`, E.terminos)}
+    <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px">
+      ${REV(`<div><b style="font-weight:500">consideration</b> <span class="chip c-fuchsia" style="margin-left:6px">sin equivalente exacto</span></div><div class="peq suave">Requisito de validez del contrato en el common law; no coincide con la «causa» del derecho continental. <i>Conservar con glosa o traducir por «contraprestación» según el contexto.</i></div>`, E.terminos + 0.35, "li")}
+      ${REV(`<div><b style="font-weight:500">covenant</b></div><div class="peq suave">Pacto o promesa vinculante; según el contexto, «pacto», «compromiso» u «obligación». <i>Fijar un solo término para todo el documento.</i></div>`, E.terminos + 0.8, "li")}
+      ${REV(`<div><b style="font-weight:500">liable</b></div><div class="peq suave">«Responsable» cubre el sentido, pero conviene decidir el alcance (civil o contractual). <i>Mantener «responsable».</i></div>`, E.terminos + 1.2, "li")}
+    </ul>
+    ${R(`<h3 class="sec" style="margin-top:20px">Criterios para todo el documento</h3><ul class="l peq suave"><li>Comillas angulares «…» para los términos definidos.</li><li>Montos con punto de mil y coma decimal.</li><li>«Shall» se resuelve con perífrasis de obligación.</li></ul>`, E.terminos + 1.8)}
+    </div></div></div></section>`;
+}
+function panelDetalle() {
+  const t0 = TM.clicEtq + 0.15;
+  return `<section class="panel" id="pn-detalle"><header><h2>Segmento 3</h2></header>
+  <div class="cuerpo-lat" style="height:506px"><div class="sc" id="sc-detalle">
+    ${REV(`<h3 class="sec">Etiquetas (2)</h3>`, t0, "div")}
+    ${REV(`<div class="tarj"><div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:4px"><span class="chip c-fuchsia">Sin equivalente exacto</span><span class="chip c-amsev">media</span><span class="nano suave">en el original · motor</span></div>
+      <p><span class="fr">consideration</span></p><p class="peq suave" style="margin-top:4px">Requisito de validez del contrato en el common law. El derecho continental no lo exige: su función la cumplen la causa y el objeto, que no coinciden.</p>
+      <p class="peq" style="margin-top:6px"><span class="suave">Propuesta: </span>contraprestación, con glosa [consideration] la primera vez.</p></div>`, t0 + 0.2)}
+    ${REV(`<div class="tarj"><div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:4px"><span class="chip c-sky">Varias opciones</span><span class="chip c-slate">baja</span><span class="nano suave">en el original · motor</span></div>
+      <p><span class="fr">covenants</span></p><p class="peq suave" style="margin-top:4px">Promesa vinculante; admite varias traducciones según el contexto.</p>
+      <p class="peq" style="margin-top:4px"><span class="suave">·</span> pactos &nbsp;<span class="suave">·</span> compromisos &nbsp;<span class="suave">·</span> obligaciones</p></div>`, E.eleccion - 0.1)}
+    ${REV(`<h3 class="sec" style="margin-top:22px">Justificación de la elección</h3>`, E.justif - 0.1)}
+    ${REV(`<div class="tarj"><p style="font-weight:500">consideration <span class="suave">→</span> contraprestación</p>
+      <p class="peq suave" style="margin-top:4px">Se descartan «consideración» (calco) y «causa» (figura distinta). En un contexto económico, «contraprestación» transmite la idea de intercambio de valor.</p>
+      ${REV(`<p class="nano suave" style="text-transform:uppercase;letter-spacing:.025em;margin-top:10px">Fuentes</p><ul class="peq" style="list-style:none;margin:2px 0 0;padding:0"><li>Restatement (Second) of Contracts, § 71 <span class="nano suave">(doctrina)</span></li><li>Black’s Law Dictionary, s. v. consideration <span class="nano suave">(diccionario)</span></li></ul>`, E.fuentes - 0.1, "div", "", "padding:0")}
+      ${REV(`<p class="nano suave" style="text-transform:uppercase;letter-spacing:.025em;margin-top:10px">Descartadas</p><ul class="peq" style="list-style:none;margin:2px 0 0;padding:0"><li><b style="font-weight:500">consideración</b><span class="suave"> — calco: no designa el requisito contractual</span></li><li><b style="font-weight:500">causa</b><span class="suave"> — figura del derecho continental, no equivalente</span></li></ul>`, E.alt - 0.15, "div", "", "padding:0")}
+    </div>`, E.justif)}
+    ${REV(`<h3 class="sec" style="margin-top:22px">Memoria de traducción</h3><div class="tarj"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span class="chip c-sky">82 %</span><span class="btn sutil" style="padding:2px 10px">Usar</span></div><p class="peq suave">In consideration of the covenants hereof, the parties…</p><p class="peq" style="margin-top:4px">En contraprestación por los compromisos de este contrato, las partes…</p></div>`, E.alt + 0.5)}
+  </div></div></section>`;
+}
+function panelCalidad() {
+  const sevCls = { alta: "c-redsev", media: "c-amsev", baja: "c-slate" };
+  return `<section class="panel" id="pn-calidad"><header><h2>Control de calidad</h2><div style="display:flex;gap:8px"><span class="btn sutil" style="padding:4px 10px">Solo reglas</span><span class="btn prin" id="b-qa2" style="padding:4px 10px">Control completo</span><span class="btn sutil" style="padding:4px 10px" id="b-desc">Descargar informe</span></div></header>
+  <div class="cuerpo-lat" style="height:506px">
+   <div id="qa-vacio" style="text-align:center;padding:90px 20px"><p style="margin:0;font-weight:500" id="qa-vt">Sin control ejecutado</p><p class="suave" style="margin:4px auto 0;max-width:330px">«Solo reglas» comprueba cifras, fechas, omisiones, glosario, calcos y criterios de redacción al instante. El «control completo» añade una lectura del modelo que contrasta sentido y matices contra el original.</p></div>
+   <div id="qa-lleno" style="visibility:hidden">
+    <div style="padding:14px 16px;border-bottom:1px solid var(--ap-borde)">
+      <p style="margin:0 0 10px"><b style="font-weight:500">7</b> hallazgos en 12 segmentos · <span style="color:#b91c1c">2 graves</span> · <span style="color:#b45309">3 medios</span> · <span class="suave">2 leves</span></p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px"><span class="filtro on" style="font-size:11px;padding:3px 10px">Todas</span><span class="filtro" style="font-size:11px;padding:3px 10px">alta (2)</span><span class="filtro" style="font-size:11px;padding:3px 10px">media (3)</span><span class="filtro" style="font-size:11px;padding:3px 10px">baja (2)</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"><span class="filtro on" style="font-size:11px;padding:3px 10px">Todo</span>${["Estilo (1)", "Fechas (1)", "Formato (1)", "Números (1)", "Omisiones (1)", "Sentido (1)", "Terminología (1)"].map(x => `<span class="filtro" style="font-size:11px;padding:3px 10px">${x}</span>`).join("")}</div>
+    </div>
+    <div style="height:290px;overflow:hidden;position:relative"><div id="qa-lista">
+    ${HALL.map((h, i) => `<div class="hall" data-k="${h.k}" data-i="${i}">
+       <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:4px"><span class="chip ${sevCls[h.sev]}">${h.sev}</span><span class="chip c-nada">${h.cat}</span><span class="nano suave">segmento ${h.seg} · ${h.src}</span></div>
+       <p style="margin:0;font-size:14px;line-height:19px">${h.msg}</p>
+       ${h.fr ? `<p class="peq" style="margin:3px 0 0"><span style="background:var(--ap-hund);border-radius:4px;padding:0 4px">${h.fr}</span></p>` : ""}
+       ${h.sug ? `<p class="peq" style="margin:3px 0 0"><span class="suave">Propuesta: </span>${h.sug}</p>` : ""}</div>`).join("")}
+    </div></div></div></div></section>`;
+}
+function panelRecursos() {
+  const cb = (t, n, id = "", on = false) => `<div class="casilla" style="padding:3px 0"><i class="cb ${on ? "on" : ""}" ${id ? `id="${id}"` : ""}></i><span>${t}<span class="suave" style="font-size:12px;margin-left:4px">${n}</span></span></div>`;
+  return `<section class="panel" id="pn-recursos"><header><h2>Recursos del encargo</h2></header>
+  <div class="cuerpo-lat" style="height:506px"><div class="sc">
+    <h3 class="sec">Estilo: Jurídica</h3>
+    <p class="peq suave" style="margin:0 0 6px">Contratos, sentencias, dictámenes y normativa sin carácter de traducción pública.</p>
+    <ul class="l peq suave" style="margin-bottom:8px"><li>Identificar el ordenamiento del original y no trasladar una figura a otra que solo se le parece.</li><li>Cuando no exista equivalencia, usar el término más próximo y advertirlo, o conservar el original con una glosa.</li><li>Respetar la terminología definida dentro del propio documento.</li></ul>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px"><span class="chip c-nada">gerundios limitados</span><span class="chip c-nada">pasiva limitada</span><span class="chip c-nada">1 adverbio/10 líneas</span></div>
+    <h3 class="sec">Glosarios</h3>
+    ${cb("Base · figuras sin equivalente exacto", "43", "", true)}
+    ${cb("Contratos Acme", "18", "cb-glo2")}
+    ${cb("Terminología financiera", "126", "cb-glo3")}
+    <h3 class="sec" style="margin-top:20px">Diccionarios</h3>
+    ${cb("Black’s Law Dictionary (extractos)", "340", "cb-dic1")}
+    <h3 class="sec" style="margin-top:20px">Terminología ya fijada</h3>
+    <p class="peq suave" style="margin:0">«consideration → contraprestación» · «Supplier → Proveedor» · «Distributor → Distribuidor»</p>
+  </div></div></section>`;
+}
+
+/* --- capas de video --- */
+$("#pills").innerHTML = ["PDF", "Word", "PowerPoint", "Imagen / escaneo"].map(x => `<span>${x}</span>`).join("");
+$("#scan").innerHTML = `<div class="cab"><span>Escaneo → texto</span><span class="chip c-slate" style="font-size:16px;padding:4px 14px">OCR</span></div>
+  <div class="cor">Poder especial otorgado en la ciudad de Buenos Aires, a los quince días del mes de marzo de dos mil veinticinco.</div>
+  <div class="br" id="br-sello">[Sello circular: Registro Mercantil, CABA]</div>
+  <div class="cor">Ante mí compareció el otorgante, quien acredita su identidad con documento nacional.</div>
+  <div class="br" id="br-firma">[Firma manuscrita, ilegible]</div>
+  <div class="ln" style="width:70%"></div><div class="ln" style="width:55%"></div>`;
+$("#doc").innerHTML = `<div class="wb">W</div><div class="tt">CONTRATO DE DISTRIBUCIÓN</div>
+  <div class="ln" style="width:92%"></div><div class="ln" style="width:100%"></div><div class="ln" style="width:78%"></div>
+  <div class="tb2"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="ln" style="width:30%;background:#cfd8da;margin-top:20px"></div><div class="ln" style="width:96%"></div><div class="ln" style="width:88%"></div>
+  <div class="pie">Títulos, listas y tablas como en el original</div>`;
+$("#menu-exp").innerHTML = ["Traducción (Word)", "Revisión bilingüe (Word)", "Texto plano", "Bilingüe (TSV)", "Informe de calidad"].map(x => `<div>${x}</div>`).join("");
+$("#hook .l1").innerHTML = T.hook1.replace(/(traductor automático con un botón\.)/, '<span class="tach">$1</span>');
+$("#hook .l2").innerHTML = T.hook2.replace(/\*(.+?)\*/g, "$1");
+$("#cierre .marca").innerHTML = "Lola<em>.</em>";
+$("#cierre .baj").textContent = T.bajada;
+$("#cierre .f1").textContent = T.cierre;
+$("#cierre .f2").innerHTML = T.cierre2.replace(/\*(.+?)\*/g, "<b>$1</b>");
+$("#cierre .nota").textContent = T.nota;
+
+/* =============== medidas (una vez, con todo en su lugar) =============== */
+const VENT = () => $("#ventana").getBoundingClientRect();
+let R = {};            // rectángulos en coordenadas del mundo (origen = esquina de la ventana)
+const rect = el => { const a = el.getBoundingClientRect(), v = VENT(); return { x: a.left - v.left, y: a.top - v.top, w: a.width, h: a.height, cx: a.left - v.left + a.width / 2, cy: a.top - v.top + a.height / 2 }; };
+const camKeys = [], curKeys = [], clics = [];
+let filas = [], alturas = [], SB = 0, SB2 = 0, QOFF = [];
+
+window.setup = async () => {
+  $("#mundo").style.transform = "none";
+  for (const p of ["#p-ini", "#p-pro"]) css($(p), { visibility: "visible" });
+  const ids = ["#dz", "#in-nombre", "#btn-crear", "#nuevo", "#b-analizar", "#b-traducir", "#b-qa", "#b-memoria", "#s-exp", "#barra-enc", "#banco", "#pila", "#tabs", "#aviso-slot", "#lista", "#pn-fuente", "#pn-detalle", "#pn-calidad", "#pn-recursos", "#cb-acme", "#sel-estilo"];
+  for (const i of ids) R[i] = rect($(i));
+  R.tab = Object.fromEntries($$("#tabs span").map(s => [s.dataset.p, rect(s)]));
+  filas = FILAS.map(f => $("#f" + f.n));
+  R.fila = filas.map(rect);
+  R.etq3 = rect($$(".etq-fila .chip", filas[2])[0]);
+  R.conf3 = rect($(".conf", filas[2]));
+  R.des3 = rect($(".des", filas[2]));
+  alturas = R.fila.map(r => r.h);
+  SB = alturas[0] + alturas[1] - 6;
+  SB2 = SB + alturas[2] + alturas[3] - 8;
+  R.cbs = { glo2: rect($("#cb-glo2")), glo3: rect($("#cb-glo3")), dic: rect($("#cb-dic1")) };
+  R.hall = $$("#qa-lista .hall").map(rect);
+  QOFF = R.hall.map(r => r.y - R.hall[0].y);
+  R.qaLista = rect($("#qa-lista").parentElement);
+  R.b2 = rect($("#b-qa2"));
+  R.fuLista = rect($("#cl-fuente"));
+
+  // ----- cámara: [t, cx, cy, s] ; la posición (cx,cy) del mundo queda en el centro de pantalla desplazado por (ox,oy)
+  const foco = (r, s, sx = 960, sy = 470, dx = 0, dy = 0) => [r.cx + dx - (sx - 960) / s, r.cy + dy - (sy - 470) / s, s];
+  const OVER = [780, 450, 1.0];
+  const der = { cx: R["#pila"].x + R["#pila"].w / 2, cy: R["#pila"].y + 250 };
+  const blo = { cx: R["#banco"].x + R["#banco"].w / 2, cy: R["#banco"].y + R["#banco"].h / 2 };
+  const nuevo = R["#nuevo"];
+  const K = (t, c) => camKeys.push([t, ...c]);
+  K(0, [780, -100, 0.7]); K(E.mesa + 1.7, [780, -100, 0.7]);
+  K(S(1) - 0.2, OVER);
+  K(S(1) + 0.9, foco({ cx: nuevo.cx, cy: nuevo.cy - 10 }, 1.32, 1330, 520));
+  K(TM.clicNombre + 0.2, foco({ cx: nuevo.cx, cy: nuevo.cy - 10 }, 1.32, 1330, 520));
+  K(TM.clicCrear - 0.5, foco({ cx: nuevo.cx, cy: nuevo.cy + 120 }, 1.32, 1330, 520));
+  K(TM.clicCrear + 0.3, foco({ cx: nuevo.cx, cy: nuevo.cy + 120 }, 1.32, 1330, 520));
+  K(TM.pagina + 0.1, OVER);
+  K(F(1) + 0.5, OVER);
+  K(S(2) + 1.7, foco(der, 1.42, 1250, 500));
+  K(F(2) - 0.4, foco(der, 1.42, 1250, 500));
+  K(S(3) + 0.6, [790, 330, 1.12]);
+  K(E.memoria + 0.3, [770, 380, 1.18]);
+  K(F(3) - 0.2, [700, 470, 1.25]);
+  K(S(4) + 0.3, foco({ cx: blo.cx, cy: blo.cy - 30 }, 1.4, 900, 480));
+  K(F(4) - 0.6, foco({ cx: blo.cx, cy: blo.cy - 20 }, 1.48, 900, 480));
+  K(S(5) + 0.35, foco(der, 1.42, 1250, 510));
+  K(F(5) - 0.3, foco(der, 1.42, 1250, 510));
+  K(S(6) + 0.2, foco(der, 1.42, 1250, 510));
+  K(TM.clicHallazgo + 0.2, foco(der, 1.42, 1250, 510));
+  K(TM.clicHallazgo + 1.4, foco({ cx: R["#banco"].x + R["#banco"].w * 0.5, cy: R.fila[4].cy - SB2 + 10 }, 1.4, 960, 500));
+  K(F(6) + 0.5, foco({ cx: R["#banco"].x + R["#banco"].w * 0.5, cy: R.fila[4].cy - SB2 + 10 }, 1.4, 960, 500));
+  K(S(7) + 0.9, [780, 330, 1.2]);
+  K(F(7) - 0.2, [780, 345, 1.2]);
+  K(S(8) + 0.6, [780, 450, 0.62]);
+  K(D, [780, 450, 0.6]);
+
+  // ----- cursor: [t, x, y]
+  const C = (t, x, y) => curKeys.push([t, x, y]);
+  const dz = R["#dz"], nom = R["#in-nombre"], cr = R["#btn-crear"];
+  C(S(1), dz.cx - 640, dz.cy + 160);
+  C(TM.arrastre, dz.cx - 460, dz.cy + 120);
+  C(TM.soltar, dz.cx + 10, dz.cy + 8);
+  C(TM.soltar + 0.7, dz.cx + 70, dz.cy + 50);
+  C(TM.clicNombre, nom.x + 90, nom.cy);
+  C(TM.clicNombre + 0.9, nom.x + 340, nom.cy + 80);
+  C(TM.clicCrear - 0.15, cr.cx, cr.cy);
+  C(TM.pagina + 0.2, cr.cx + 20, cr.cy + 50);
+  const an = R["#b-analizar"], tr = R["#b-traducir"], qa = R["#b-qa"], me = R["#b-memoria"], ex = R["#s-exp"];
+  C(TM.pagina + 0.9, an.cx - 220, an.cy + 120);
+  C(TM.clicAnalizar - 0.12, an.cx, an.cy);
+  C(TM.clicAnalizar + 0.9, R["#pila"].x + 90, R["#pila"].y + 190);
+  C(TM.clicAnalizar + 3.2, R["#pila"].x + 130, R["#pila"].y + 260);
+  C(TM.clicTraducir - 0.12, tr.cx, tr.cy);
+  C(TM.clicRecursos - 0.1, R.tab.recursos.cx, R.tab.recursos.cy);
+  C(TM.clicRecursos + 1.0, R["#pila"].x + 250, R["#pila"].y + 250);
+  C(S(4) + 1.0, R["#banco"].x + 700, R["#banco"].y + 400);
+  C(TM.clicEtq - 0.15, R.etq3.cx, R.etq3.cy);
+  C(TM.clicEtq + 1.0, R["#pila"].x + 300, R["#pila"].y + 330);
+  C(TM.clicConf - 0.15, R.conf3.cx, R.conf3.cy);
+  C(TM.clicConf + 0.8, R.conf3.cx - 100, R.conf3.cy + 150);
+  C(TM.clicQA - 0.12, qa.cx, qa.cy);
+  C(TM.clicQA + 1.0, R["#pila"].x + 300, R["#pila"].y + 300);
+  C(TM.clicHallazgo - 0.2, R["#pila"].x + R["#pila"].w / 2, R.hall[0].cy + 40);
+  C(TM.clicHallazgo, R["#pila"].x + R["#pila"].w / 2 - 30, R.hall[0].cy);
+  C(TM.clicHallazgo + 1.4, R["#banco"].x + 600, R.fila[4].cy - SB2 + 60);
+  C(TM.clicGuardar - 0.2, me.cx + 20, me.cy + 70);
+  C(TM.clicGuardar, me.cx, me.cy);
+  C(TM.clicExp - 0.3, me.cx + 60, me.cy + 30);
+  C(TM.clicExp, ex.cx, ex.cy);
+  C(TM.clicDocx - 0.3, ex.x + ex.w - 150, ex.y + 52 + 20);
+  C(TM.clicDocx, ex.x + ex.w - 150, ex.y + 52 + 20);
+  C(TM.clicDocx + 0.8, ex.x + ex.w - 100, ex.y + 200);
+
+  // ----- clics: [t, elemento que se hunde] (el cursor sale de curKeys)
+  const CL = (t, el) => clics.push({ t, el });
+  CL(TM.clicNombre, $("#in-nombre")); CL(TM.clicCrear, $("#btn-crear")); CL(TM.clicAnalizar, $("#b-analizar"));
+  CL(TM.clicTraducir, $("#b-traducir")); CL(TM.clicRecursos, $('#tabs [data-p="recursos"]'));
+  CL(TM.clicEtq, $$(".etq-fila .chip", filas[2])[0]); CL(TM.clicConf, $(".conf", filas[2]));
+  CL(TM.clicQA, $("#b-qa")); CL(TM.clicHallazgo, $$("#qa-lista .hall")[0]);
+  CL(TM.clicGuardar, $("#b-memoria")); CL(TM.clicExp, $("#s-exp")); CL(TM.clicDocx, $("#menu-exp"));
+
+  // menú de exportación: justo debajo del selector
+  css($("#menu-exp"), { width: "230px", left: ex.x + ex.w - 230 + "px", top: ex.y + 34 + ex.h + 6 + "px" });
+  css($("#archivo"), { left: "0px", top: "0px" });
+  $("#mundo").style.transform = "";
+};
+
+/* =============== cámara, cursor, utilidades =============== */
+function camara(t) {
+  let i = 0;
+  while (i < camKeys.length - 2 && t >= camKeys[i + 1][0]) i++;
+  const a = camKeys[i], b = camKeys[i + 1] || a;
+  const p = b[0] > a[0] ? ease.inOut(clamp((t - a[0]) / (b[0] - a[0]))) : 1;
+  return [lerp(a[1], b[1], p), lerp(a[2], b[2], p), lerp(a[3], b[3], p)];
+}
+function cursorPos(t) {
+  let i = 0;
+  while (i < curKeys.length - 2 && t >= curKeys[i + 1][0]) i++;
+  const a = curKeys[i], b = curKeys[i + 1] || a;
+  const p = b[0] > a[0] ? ease.inOut(clamp((t - a[0]) / (b[0] - a[0]))) : 1;
+  return [lerp(a[1], b[1], p), lerp(a[2], b[2], p)];
+}
+const set = (sel, txt) => { const e = typeof sel === "string" ? $(sel) : sel; if (e.textContent !== txt) e.textContent = txt; };
+const op = (el, o) => { el.style.opacity = o; el.style.visibility = o > 0.001 ? "visible" : "hidden"; };
+
+// reveal: elementos con data-t aparecen a esa hora
+let revs = null;
+function revelar(t) {
+  revs ??= $$(".rev").map(el => ({ el, t: +el.dataset.t, chip: el.classList.contains("chip") }));
+  for (const r of revs) {
+    const p = k(t, r.t, r.t + 0.35, ease.out);
+    r.el.style.opacity = p;
+    if (!r.chip) r.el.style.transform = p < 1 ? `translateY(${(1 - p) * 10}px)` : "";
+  }
+}
+
+/* =============== render =============== */
+const KICK = [null, ["01", "Cargar el documento"], ["02", "Leer el texto fuente"], ["03", "Traducir con tu memoria"], ["04", "Revisar con etiquetas"], ["05", "Cada elección, justificada"], ["06", "Control de calidad"], ["07", "Memoria y exportación"]];
+const pend = ["Pendiente", "Traducido", "Confirmado"];
+let kickLast = "";
+
+window.render = t => {
+  // --- fondo vivo
+  css($(".b1"), { left: `${-300 + 140 * Math.sin(t * 0.17)}px`, top: `${-450 + 90 * Math.cos(t * 0.13)}px` });
+  css($(".b2"), { left: `${1000 + 120 * Math.cos(t * 0.15)}px`, top: `${500 + 100 * Math.sin(t * 0.11)}px` });
+  css($(".b3"), { left: `${500 + 160 * Math.sin(t * 0.09 + 2)}px`, top: `${300 + 120 * Math.cos(t * 0.1)}px` });
+
+  // --- cámara
+  const [cx, cy, s] = camara(t);
+  const dx = 7 * Math.sin(t * 0.45), dy = 5 * Math.cos(t * 0.37);
+  css($("#mundo"), { transform: `translate(${960 - cx * s + dx}px, ${470 - cy * s + dy}px) scale(${s})` });
+
+  // --- cierre: la ventana se aleja y se apaga
+  const aten = k(t, S(8) + 0.1, S(8) + 1.1, ease.inOut);
+  css($("#ventana"), { opacity: 1 - 0.78 * aten, filter: aten > 0 ? `blur(${aten * 5}px)` : "" });
+
+  // --- páginas
+  const tOut = k(t, TM.pagina - 0.25, TM.pagina + 0.05, ease.in), tIn = k(t, TM.pagina + 0.05, TM.pagina + 0.6, ease.out);
+  css($("#p-ini"), { opacity: 1 - tOut, transform: `translateX(${-60 * tOut}px)`, visibility: tOut < 1 ? "visible" : "hidden" });
+  css($("#p-pro"), { opacity: tIn, transform: `translateX(${60 * (1 - tIn)}px)`, visibility: tIn > 0 ? "visible" : "hidden" });
+
+  // ================= INICIO =================
+  // el archivo se arrastra hasta la zona de carga y se suelta
+  const dz = R["#dz"], pa = k(t, TM.arrastre, TM.soltar, ease.inOut);
+  const [cux, cuy] = cursorPos(t);
+  const arrastrando = t >= TM.arrastre - 0.05 && t < TM.soltar + 0.05;
+  css($("#archivo"), { transform: `translate(${cux - 4}px, ${cuy - 4}px) rotate(${(1 - pa) * -3}deg)`, opacity: arrastrando ? 1 : 0, visibility: arrastrando ? "visible" : "hidden" });
+  const soltado = t >= TM.soltar;
+  set("#dz-t", soltado ? "contrato-distribucion-acme.pdf" : "Arrastrar el archivo o pulsar aquí");
+  set("#dz-s", soltado ? "184 kB · pulsar para cambiar" : "PDF, Word, PowerPoint o imagen");
+  $("#dz").classList.toggle("con", soltado || arrastrando);
+  // nombre del encargo: se escribe
+  const nombre = "Contrato de distribución — Acme", nTipo = Math.floor(nombre.length * k(t, TM.nombre, TM.nombre + 1.4, ease.lin));
+  set("#in-t", nombre.slice(0, nTipo)); css($("#in-ph"), { display: nTipo > 0 ? "none" : "" });
+  set("#sel-estilo", t > TM.nombre + 1.5 ? "Jurídica" : "General");
+  $("#cb-acme").classList.toggle("on", t > TM.nombre + 1.9);
+  set("#btn-crear-t", t > TM.procesa ? "Procesando el documento…" : "Crear encargo");
+
+  // ================= PROYECTO =================
+  // progreso de la traducción: 12 segmentos
+  const pt = k(t, TM.trad0, TM.trad0 + 3.7, ease.lin);
+  const hechos = Math.round(pt * NFILAS);
+  const traduciendo = t >= TM.clicTraducir + 0.1 && pt < 1;
+  const traducido = pt >= 1;
+  const confirmados = t >= TM.clicGuardar - 1 ? 9 : t >= TM.clicConf + 0.1 ? 3 : 0;
+  set("#sub-enc", `Inglés → Español · ${NFILAS} segmentos · ${hechos} traducidos · ${confirmados} confirmados · contrato-distribucion-acme.pdf`);
+  const pr = traduciendo || traducido ? pt : 0;
+  css($("#prog"), { width: `${pr * 100}%` });
+  set("#prog-p", `${Math.round(pr * 100)} %`);
+  set("#b-analizar span", t < TM.clicAnalizar + 0.05 ? "Analizar fuente" : t < TM.analizado ? "Analizando…" : "Releer fuente");
+  set("#b-traducir span", traduciendo ? "Traduciendo…" : traducido ? "Traducir 0 pendientes" : "Traducir 12 pendientes");
+  $("#b-traducir").classList.toggle("off", traduciendo || traducido);
+  const enQA = t >= TM.clicQA && t < TM.informe;
+  set("#b-qa span", enQA ? "Revisando…" : "Control de calidad");
+  $("#b-memoria").classList.toggle("off", confirmados === 0 || false);
+  // filtros
+  set("#f-pend", `Pendientes (${NFILAS - hechos})`);
+  set("#f-marc", `Marcados (${t > E.dif + 0.2 ? 4 : 0})`);
+  set("#f-conf", `Confirmados (${confirmados})`);
+
+  // aviso (debajo de la barra)
+  let av = null;
+  if (t >= TM.analizado && t < TM.analizado + 2.6) av = ["Texto analizado.", k(t, TM.analizado, TM.analizado + 0.3) * (1 - k(t, TM.analizado + 2.3, TM.analizado + 2.6))];
+  else if (traducido && t < TM.trad0 + 3.7 + 3.4) av = ["Traducción terminada.", k(t, TM.trad0 + 3.7, TM.trad0 + 4.0) * (1 - k(t, TM.trad0 + 6.8, TM.trad0 + 7.1))];
+  else if (t >= TM.clicGuardar + 0.3 && t < TM.clicGuardar + 3.8) av = ["9 segmentos confirmados guardados en la memoria de traducción.", k(t, TM.clicGuardar + 0.3, TM.clicGuardar + 0.6) * (1 - k(t, TM.clicGuardar + 3.4, TM.clicGuardar + 3.8))];
+  if (av) { set("#aviso", av[0]); css($("#aviso"), { opacity: av[1], transform: `translateY(${(1 - av[1]) * -6}px)` }); } else css($("#aviso"), { opacity: 0 });
+
+  // ----- filas del banco
+  const t0f = [TM.trad0, TM.trad0, TM.trad0 + 0.7, TM.trad0 + 1.55, TM.trad0 + 2.4, TM.trad0 + 3.0, TM.trad0 + 3.35]; // inicio de cada fila
+  FILAS.forEach((f, i) => {
+    const fila = filas[i];
+    const ini = t0f[i], dur = f.mem ? 0.3 : 0.95;
+    const p = k(t, ini, ini + dur, ease.lin);
+    const palabras = $$(".des .pw", fila);
+    const n = palabras.length;
+    palabras.forEach((w, j) => { const q = clamp(p * n - j); w.style.opacity = q; });
+    css($(".sin", fila), { opacity: p > 0 ? 0 : 1 });
+    const hecho = p >= 1, enCurso = p > 0 && p < 1;
+    const conf = (i === 2 && t >= TM.clicConf + 0.08) || (i <= 1 && t >= TM.clicGuardar - 1);
+    const est = $(".est", fila);
+    const nombreEst = conf ? "Confirmado" : hecho ? "Traducido" : enCurso ? "Traducido" : "Pendiente";
+    set(est, nombreEst);
+    est.className = "chip est " + (conf ? "c-emerald" : nombreEst === "Traducido" ? "c-sky" : "c-slate");
+    css($(".mem", fila), { display: f.mem && p > 0 ? "" : "none" });
+    css($(".conf", fila), { visibility: hecho && !conf ? "visible" : "hidden" });
+    fila.classList.toggle("sel1", i === 0 ? t < TM.clicEtq : i === 2 && t >= TM.clicEtq);
+  });
+  // marcas: se resuelve por (fila, ámbito, índice dentro del ámbito)
+  FILAS.forEach((f, i) => {
+    const fila = filas[i];
+    for (const a of ["o", "d"]) {
+      const lista = f.marks.filter(m => m.a === a);
+      $$(".mk", $(a === "o" ? ".ori" : ".des", fila)).forEach(m => {
+        const info = lista[+m.dataset.m];
+        if (!info) return;
+        const q = k(t, info.t, info.t + 0.4, ease.out);
+        const ping = k(t, info.t, info.t + 0.9, ease.out);
+        m.style.setProperty("--mk", q); m.classList.toggle("on", q > 0);
+        m.style.setProperty("--ping", q > 0 ? Math.max(0, 1 - ping) * Math.sin(Math.PI * Math.min(1, ping * 1.6)) : 0);
+        // la omisión sólo existe una vez que el control de calidad la detecta
+      });
+    }
+  });
+  // la lista del banco se desplaza para seguir el trabajo
+  const sc1 = lerp(0, SB, k(t, TM.trad0 + 1.0, TM.trad0 + 2.3, ease.inOut)) + lerp(0, SB2 - SB, k(t, TM.clicHallazgo + 0.3, TM.clicHallazgo + 1.4, ease.inOut));
+  css($("#lista"), { height: "515px" });
+  css($("#lista-in"), { transform: `translateY(${-sc1}px)` });
+
+  // ----- pestañas
+  let tab = "fuente";
+  if (t >= TM.clicRecursos) tab = "recursos";
+  if (t >= TM.clicEtq) tab = "detalle";
+  if (t >= TM.clicQA) tab = "calidad";
+  $$("#tabs span").forEach(s => s.classList.toggle("on", s.dataset.p === tab));
+  ["fuente", "detalle", "calidad", "recursos"].forEach(n => { const el = $("#pn-" + n); el.style.visibility = n === tab ? "visible" : "hidden"; el.style.opacity = n === tab ? 1 : 0; });
+  revelar(t);
+
+  // panel Fuente
+  const analizado = t >= TM.analizado - 0.1;
+  css($("#fu-vacio"), { display: analizado ? "none" : "" });
+  css($("#fu-lleno"), { visibility: analizado ? "visible" : "hidden" });
+  const scF = lerp(0, 250, k(t, E.registro + 0.9, E.terminos + 0.9, ease.inOut));
+  css($("#sc-fuente"), { transform: `translateY(${-scF}px)` });
+  // panel Detalle: desplazamiento por secciones
+  const scD = lerp(0, 235, k(t, E.justif - 0.2, E.justif + 0.7, ease.inOut)) + lerp(0, 150, k(t, E.fuentes + 0.1, E.alt + 0.4, ease.inOut));
+  css($("#sc-detalle"), { transform: `translateY(${-scD}px)` });
+  // panel Calidad
+  const informe = t >= TM.informe;
+  set("#qa-vt", enQA ? "Revisando…" : "Sin control ejecutado");
+  css($("#qa-vacio"), { display: informe ? "none" : "" });
+  css($("#qa-lleno"), { visibility: informe ? "visible" : "hidden" });
+  $("#b-qa2").classList.toggle("off", enQA);
+  const hs = $$("#qa-lista .hall");
+  hs.forEach((h, i) => { const q = k(t, TM.informe + 0.1 + i * 0.09, TM.informe + 0.4 + i * 0.09); h.style.opacity = q; });
+  const foco = (a, b) => t >= a && t < b;
+  const activos = {
+    num: foco(E.cifras - 0.1, E.fechas - 0.15), fec: foco(E.fechas - 0.1, E.glosario - 0.15), glo: foco(E.glosario - 0.1, E.segunda - 0.2),
+    omi: t >= E.segunda + 0.2 && t < E.omisiones + 0.2 || t >= E.omisiones + 0.2, sen: foco(E.segunda + 0.2, E.omisiones + 0.2),
+  };
+  hs.forEach(h => h.classList.toggle("on", !!activos[h.dataset.k]));
+  const qk = [[E.cifras - 0.5, 0], [E.cifras + 0.1, QOFF[2]], [E.fechas - 0.1, QOFF[2]], [E.fechas + 0.4, QOFF[3]], [E.glosario - 0.1, QOFF[3]], [E.glosario + 0.4, QOFF[4]], [E.segunda - 0.15, QOFF[4]], [E.segunda + 0.55, 0]];
+  let sq = 0; for (let i = 0; i < qk.length - 1; i++) if (t >= qk[i][0]) sq = lerp(qk[i][1], qk[i + 1][1], ease.inOut(clamp((t - qk[i][0]) / (qk[i + 1][0] - qk[i][0]))));
+  css($("#qa-lista"), { transform: `translateY(${-sq}px)` });
+  // checkboxes de recursos
+  $("#cb-glo2").classList.toggle("on", t >= E.glosarios + 0.1);
+  $("#cb-dic1").classList.toggle("on", t >= E.glosarios + 0.6);
+
+  // menú de exportación
+  const mAb = t >= TM.clicExp + 0.05 && t < TM.clicDocx + 0.15;
+  css($("#menu-exp"), { visibility: mAb ? "visible" : "hidden", opacity: k(t, TM.clicExp + 0.05, TM.clicExp + 0.25) });
+  $$("#menu-exp div").forEach((d, i) => d.classList.toggle("h", i === 0 && t >= TM.clicDocx - 0.45));
+
+  // ================= cursor y clics =================
+  const [cxu, cyu] = cursorPos(t);
+  const visC = t >= curKeys[0][0] && t < S(8) ? 1 : 0;
+  const hold = arrastrando;
+  css($("#cursor"), { transform: `translate(${cxu - 4}px, ${cyu - 3}px)`, opacity: visC * k(t, S(1) + 0.2, S(1) + 0.5) * (1 - k(t, S(8) - 0.5, S(8))) , visibility: visC ? "visible" : "hidden" });
+  clics.forEach(c => { const p = clamp(1 - Math.abs(t - c.t) / 0.16); c.el.style.transform = p > 0 ? `scale(${1 - 0.05 * p})` : ""; c.el.style.filter = p > 0 ? `brightness(${1 - 0.1 * p})` : ""; });
+  const rc = clics.filter(c => t >= c.t && t < c.t + 0.6).pop();
+  if (rc) { const [rx, ry] = cursorPos(rc.t); const q = (t - rc.t) / 0.6; css($("#ripple"), { visibility: "visible", transform: `translate(${rx}px, ${ry}px) scale(${0.4 + q * 1.5})`, opacity: (1 - q) * 0.9 }); }
+  else css($("#ripple"), { visibility: "hidden" });
+
+  // ================= capas de video =================
+  // hook
+  const h2 = k(t, E.mesa - 0.15, E.mesa + 0.45, ease.back);
+  const hOut = k(t, E.mesa + 1.7, E.mesa + 2.5, ease.in);
+  css($("#hook"), { opacity: 1 - hOut, transform: `translateY(${-hOut * 40}px)`, visibility: hOut >= 1 ? "hidden" : "visible" });
+  css($("#hook .l1"), { opacity: lerp(1, 0.38, ease.out(k(t, E.mesa - 0.2, E.mesa + 0.4))) });
+    css($("#hook .l2"), { opacity: h2, transform: `translateY(${(1 - h2) * 40}px) scale(${lerp(0.94, 1, h2)})`, visibility: h2 > 0 ? "visible" : "hidden" });
+
+  // kicker por escena
+  let ki = 0; for (let i = 1; i <= 7; i++) if (t >= S(i) + 0.15 && t < F(i) - 0.1) ki = i;
+  const kk = ki ? KICK[ki] : null;
+  if (kk) { const h = `<b>${kk[0]}</b>${kk[1]}`; if (kickLast !== h) { $("#kicker").innerHTML = h; kickLast = h; } }
+  const kIn = ki ? k(t, S(ki) + 0.15, S(ki) + 0.6, ease.out) * (1 - k(t, F(ki) - 0.35, F(ki) - 0.1, ease.in)) : 0;
+  css($("#kicker"), { visibility: kIn > 0.01 ? "visible" : "hidden", opacity: kIn, transform: `translateX(${(1 - kIn) * -30}px)` });
+
+  // escena 1: formatos y escaneo
+  const e1 = k(t, S(1) + 0.3, S(1) + 0.8) * (1 - k(t, TM.clicCrear - 0.3, TM.clicCrear + 0.1));
+  css($("#pills"), { visibility: e1 > 0.01 ? "visible" : "hidden", opacity: e1, transform: `translateY(${(1 - e1) * -16}px)` });
+  const on = [E.pdf - 0.05, E.word - 0.05, E.word + 0.45, E.escaneo - 0.05];
+  $$("#pills span").forEach((p, i) => p.classList.toggle("on", t >= on[i]));
+  css($("#dim"), { visibility: e1 > 0.01 ? "visible" : "hidden", opacity: e1 });
+  const sc = k(t, E.lee - 0.35, E.lee + 0.25, ease.back) * (1 - k(t, TM.clicCrear - 0.3, TM.clicCrear + 0.1));
+  css($("#scan"), { visibility: sc > 0.01 ? "visible" : "hidden", opacity: Math.min(1, sc * 1.5), transform: `translateY(${(1 - sc) * 40}px) scale(${lerp(0.94, 1, sc)})` });
+  $("#br-sello").classList.toggle("on", t >= E.sellos - 0.05);
+  $("#br-firma").classList.toggle("on", t >= E.firmas - 0.05);
+  // escena 7: documento Word
+  const dc = k(t, TM.clicDocx + 0.1, TM.clicDocx + 0.7, ease.back) * (1 - k(t, F(7) - 0.5, F(7) - 0.1));
+  css($("#doc"), { visibility: dc > 0.01 ? "visible" : "hidden", opacity: Math.min(1, dc * 1.4), transform: `translate(${(1 - dc) * -60}px, 0) rotate(${(1 - dc) * -4 - 1.5}deg) scale(${lerp(0.9, 1, dc)})` });
+
+  // cierre
+  const ci = k(t, S(8) + 0.1, S(8) + 0.9);
+  css($("#cierre"), { visibility: ci > 0 ? "visible" : "hidden", background: `rgba(12,13,16,${0.45 * ci})` });
+  const q = (a, b) => k(t, a, b, ease.back);
+  css($("#cierre .marca"), { opacity: q(E.lola - 0.15, E.lola + 0.5), transform: `translateY(${(1 - q(E.lola - 0.15, E.lola + 0.5)) * 40}px)` });
+  css($("#cierre .baj"), { opacity: k(t, E.lola + 0.25, E.lola + 0.9) });
+  css($("#cierre .f1"), { opacity: q(E.motor - 0.1, E.motor + 0.55), transform: `translateY(${(1 - q(E.motor - 0.1, E.motor + 0.55)) * 36}px)` });
+  css($("#cierre .f2"), { opacity: q(E.vos - 0.1, E.vos + 0.55), transform: `translateY(${(1 - q(E.vos - 0.1, E.vos + 0.55)) * 36}px)` });
+  css($("#cierre .nota"), { opacity: k(t, E.vos + 0.3, E.vos + 0.9) * 0.9 });
+
+  // subtítulos (palabra resaltada)
+  const r = V.palabras.length ? subtitulo($("#sub"), t, { maxCar: 44, maxPal: 8 }) : null;
+  css($("#sub"), { visibility: r && $("#sub").innerHTML ? "visible" : "hidden" });
+  // fundido final
+  css($("#fin"), { opacity: k(t, D - 0.5, D, ease.in) });
+};
+</script>
+</body>
+</html>

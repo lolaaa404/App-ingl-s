@@ -1,0 +1,88 @@
+{
+  "slug": "lola-presentacion",
+  "titulo": "Lola, presentación",
+  "w": 1920,
+  "h": 1080,
+  "fps": 30,
+  "dur": 63.6,
+  "lufs": -14,
+  "musica": "minimal",
+  "voz": "out/voz/locucion.wav",
+  "subtitulos": true,
+  "base": {
+    "colores": {
+      "fondo": "#101114",
+      "fondo2": "#1a2a2c",
+      "texto": "#faf9f6",
+      "acento": "#4fb3b8",
+      "acento2": "#e9b872"
+    },
+    "textos": {
+      "hook1": "No es un traductor automático con un botón.",
+      "hook2": "Es una *mesa de trabajo*.",
+      "cierre": "El motor propone.",
+      "cierre2": "Vos *decidís*.",
+      "marca": "Lola",
+      "bajada": "asistente de traducción español ⇄ inglés",
+      "nota": "Encargo de ejemplo",
+      "escenas": [
+        "Lola no es un traductor automático con un botón. Es una mesa de trabajo para traducir con criterio.",
+        "Subí un PDF, un Word o un escaneo: Lola lee el texto y describe sellos y firmas.",
+        "Antes de traducir, entiende el documento: ámbito, registro y términos conflictivos.",
+        "Traduce por lotes con tu memoria, tus glosarios y la terminología ya fijada.",
+        "Original y traducción, lado a lado, con cada dificultad marcada por color: calcos, falsos amigos, figuras sin equivalente.",
+        "Tocás un segmento y cada elección viene justificada, con fuentes y alternativas descartadas.",
+        "El control de calidad revisa cifras, fechas y glosario, y una segunda lectura detecta omisiones.",
+        "La memoria reutiliza lo ya traducido. Y exportás a Word con la estructura del original.",
+        "Lola. El motor propone. Vos decidís."
+      ]
+    },
+    "tiempos": {
+      "escenas": [
+        [
+          0.0,
+          7.374
+        ],
+        [
+          7.374,
+          14.508
+        ],
+        [
+          14.508,
+          20.85
+        ],
+        [
+          20.85,
+          26.568
+        ],
+        [
+          26.568,
+          35.718
+        ],
+        [
+          35.718,
+          42.276
+        ],
+        [
+          42.276,
+          49.338
+        ],
+        [
+          49.338,
+          56.256
+        ],
+        [
+          56.256,
+          63.458
+        ]
+      ]
+    }
+  },
+  "variantes": {
+    "A": {
+      "nota": "Control"
+    }
+  },
+  "clips": {},
+  "voz_desde": 0
+}

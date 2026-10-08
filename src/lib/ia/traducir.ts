@@ -112,14 +112,23 @@ export async function traducirSegmentos(opciones: {
   memoria: EntradaMemoria[];
   /** Índices de los segmentos a traducir; por defecto, los pendientes. */
   indices?: number[];
-  /** Reutiliza las coincidencias del 100 % sin pasar por el modelo. */
+  /**
+   * Reutiliza las coincidencias del 100 % sin pasar por el modelo. Por defecto
+   * sí, salvo que se pidan segmentos concretos: quien pide volver a traducir
+   * uno espera una traducción nueva, no la misma que ya está en la memoria.
+   */
   aprovecharMemoria?: boolean;
   onProgreso?: (p: ProgresoTraduccion) => void;
+  /**
+   * Se llama con los segmentos ya resueltos (los de la memoria y, después, los
+   * de cada lote) para que quien llama los guarde sin esperar al final.
+   */
+  onLote?: (resueltos: Segmento[]) => Promise<void> | void;
 }): Promise<ResultadoTraduccion> {
   exigirClave();
 
   const { proyecto, estilo, glosarios, diccionarios, memoria } = opciones;
-  const aprovecharMemoria = opciones.aprovecharMemoria ?? true;
+  const aprovecharMemoria = opciones.aprovecharMemoria ?? !opciones.indices?.length;
   const avisos: string[] = [];
 
   const segmentos = proyecto.segmentos.map((s) => ({ ...s }));
@@ -145,6 +154,7 @@ export async function traducirSegmentos(opciones: {
       s.propuesta = exacta.destino;
       s.estado = 'traducido';
       s.desdeMemoria = true;
+      s.justificaciones = [];
       s.anotaciones = deduplicar([
         ...anotarCalcos(s.destino, proyecto.idiomaDestino),
         {
@@ -163,6 +173,9 @@ export async function traducirSegmentos(opciones: {
       pendientes.push(s);
     }
   }
+
+  const resueltosPorMemoria = seleccion.filter((s) => s.desdeMemoria);
+  if (resueltosPorMemoria.length) await opciones.onLote?.(resueltosPorMemoria);
 
   if (!pendientes.length) {
     return {
@@ -225,6 +238,7 @@ export async function traducirSegmentos(opciones: {
       });
 
       const porId = new Map(output.segmentos.map((r) => [r.id, r]));
+      const traducidosEnLote: Segmento[] = [];
 
       for (const s of lote) {
         const resultado = porId.get(s.id);
@@ -280,8 +294,11 @@ export async function traducirSegmentos(opciones: {
           }
         }
 
+        traducidosEnLote.push(s);
         hechos++;
       }
+
+      await opciones.onLote?.(traducidosEnLote);
     } catch (error) {
       const mensaje = mensajeDeError(error);
       avisos.push(

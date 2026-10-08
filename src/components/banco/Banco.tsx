@@ -188,11 +188,16 @@ export function Banco({
         body: JSON.stringify({ indices }),
       });
 
+      if (!respuesta.ok) {
+        const cuerpo = await respuesta.json().catch(() => ({}));
+        throw new Error(cuerpo.error ?? 'El servidor rechazó la traducción.');
+      }
       if (!respuesta.body) throw new Error('El servidor no devolvió contenido.');
 
       const lector = respuesta.body.getReader();
       const decodificador = new TextDecoder();
       let resto = '';
+      let terminoElFlujo = false;
 
       for (;;) {
         const { done, value } = await lector.read();
@@ -210,6 +215,7 @@ export function Banco({
             setProgreso({ hechos: evento.hechos, total: evento.total });
             if (evento.aviso) setMensaje({ tono: 'atencion', texto: evento.aviso });
           } else if (evento.tipo === 'fin') {
+            terminoElFlujo = true;
             setProyecto(evento.proyecto);
             setMensaje(
               evento.avisos?.length
@@ -217,9 +223,22 @@ export function Banco({
                 : { tono: 'exito', texto: 'Traducción terminada.' },
             );
           } else if (evento.tipo === 'error') {
+            terminoElFlujo = true;
             setMensaje({ tono: 'error', texto: evento.error });
           }
         }
+      }
+
+      // El servidor guarda cada lote al terminarlo: si el flujo se cortó sin
+      // avisar (límite de tiempo, conexión), se recupera lo que quedó hecho.
+      if (!terminoElFlujo) {
+        const recarga = await fetch(`/api/proyectos/${proyecto.id}`);
+        if (recarga.ok) setProyecto((await recarga.json()).proyecto);
+        setMensaje({
+          tono: 'atencion',
+          texto:
+            'La traducción se cortó antes de terminar. Se conservó lo ya traducido; pulsa «Traducir» otra vez para seguir con los pendientes.',
+        });
       }
     } catch (error) {
       setMensaje({

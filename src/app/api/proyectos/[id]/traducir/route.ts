@@ -1,12 +1,13 @@
 import {
-  guardarProyecto,
   listarMemoria,
+  mutarProyecto,
   obtenerDiccionarios,
   obtenerEstilo,
   obtenerGlosarios,
   obtenerProyecto,
 } from '@/lib/almacen/repositorios';
 import { traducirSegmentos } from '@/lib/ia/traducir';
+import type { Segmento } from '@/lib/tipos';
 
 export const maxDuration = 300;
 
@@ -22,7 +23,7 @@ interface Contexto {
 export async function POST(request: Request, { params }: Contexto) {
   const { id } = await params;
 
-  const { indices, aprovecharMemoria = true } = (await request
+  const { indices, aprovecharMemoria } = (await request
     .json()
     .catch(() => ({}))) as { indices?: number[]; aprovecharMemoria?: boolean };
 
@@ -43,7 +44,22 @@ export async function POST(request: Request, { params }: Contexto) {
   const flujo = new ReadableStream<Uint8Array>({
     async start(controlador) {
       const enviar = (dato: unknown) => {
-        controlador.enqueue(codificador.encode(`${JSON.stringify(dato)}\n`));
+        try {
+          controlador.enqueue(codificador.encode(`${JSON.stringify(dato)}\n`));
+        } catch {
+          // El cliente cortó la conexión: la traducción sigue y se guarda igual.
+        }
+      };
+
+      // Cada lote se guarda al terminar, sobre la versión más reciente del
+      // proyecto: un corte a mitad de camino no pierde lo ya traducido y las
+      // ediciones hechas mientras tanto en otros segmentos no se pisan.
+      const guardarResueltos = async (resueltos: Segmento[]) => {
+        const porId = new Map(resueltos.map((s) => [s.id, s]));
+        await mutarProyecto(id, (actual) => ({
+          ...actual,
+          segmentos: actual.segmentos.map((s) => porId.get(s.id) ?? s),
+        }));
       };
 
       try {
@@ -56,16 +72,12 @@ export async function POST(request: Request, { params }: Contexto) {
           indices,
           aprovecharMemoria,
           onProgreso: (p) => enviar({ tipo: 'progreso', ...p }),
-        });
-
-        const guardado = await guardarProyecto({
-          ...proyecto,
-          segmentos: resultado.segmentos,
+          onLote: guardarResueltos,
         });
 
         enviar({
           tipo: 'fin',
-          proyecto: guardado,
+          proyecto: (await obtenerProyecto(id)) ?? proyecto,
           avisos: resultado.avisos,
           terminologia: resultado.terminologia,
         });
